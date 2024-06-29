@@ -359,6 +359,9 @@ class GJRGARCHModel(GARCHModel):
         Returns:
             List[float]: [mu, omega, alpha, gamma, beta, loglikelihood]
         """
+        # No repeated estimation?
+        if self.estimation_success:
+            return
         starting_vals = self.preparation()
 
         bounds = [
