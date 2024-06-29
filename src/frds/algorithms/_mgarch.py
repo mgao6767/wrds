@@ -313,6 +313,7 @@ class GARCHModel_DCC(GARCHModel_CCC):
                 continue
             ll = -self.loglikelihood_model([a, b])
             if ll > max_ll:
+                max_ll = ll
                 initial_values = [a, b]
         return initial_values
 
