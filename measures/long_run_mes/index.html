@@ -1,0 +1,1015 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Marginal Expected Shortfall" href="../marginal_expected_shortfall/" /><link rel="prev" title="Limit Order Book Slope" href="../limit_order_book_slope/" />
+        <link rel="canonical" href="https://frds.io/measures/long_run_mes/" />
+
+    <link rel="shortcut icon" href="../../_static/frds.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Long-Run Marginal Expected Shortfall (LRMES) - frds</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=415d3439" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">frds</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/frds_icon.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">frds</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Supported Measures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Supported Measures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../absorption_ratio/">Absorption Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contingent_claim_analysis/">Contingent Claim Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distress_insurance_premium/">Distress Insurance Premium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kyle_lambda/">Kyle’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lerner_index/">Lerner Index (Banks)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../limit_order_book_slope/">Limit Order Book Slope</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Long-Run Marginal Expected Shortfall (LRMES)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../marginal_expected_shortfall/">Marginal Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../option_prices/">Option Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../probability_of_informed_trading/">Probability of Informed Trading (PIN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spread_and_price_impact/">Spread and Price Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../srisk/">SRISK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../systemic_expected_shortfall/">Systemic Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../z_score/">Z-score</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../algorithms/">Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch/">GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-ccc/">GARCH(1,1) - CCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-dcc/">GARCH(1,1) - DCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch/">GJR-GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch-dcc/">GJR-GARCH(1,1) - DCC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../datasets/">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/stock-returns/">Stock Returns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/mgao6767/frds/">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mingze-gao.com">Mingze Gao</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/measures/long_run_mes.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="long-run-marginal-expected-shortfall-lrmes">
+<h1>Long-Run Marginal Expected Shortfall (LRMES)<a class="headerlink" href="#long-run-marginal-expected-shortfall-lrmes" title="Link to this heading">¶</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Check <a class="reference internal" href="#examples">Examples</a> section for code guide and comparison to NYU’s
+<a class="reference external" href="https://vlab.stern.nyu.edu/srisk/RISK.USFIN-MR.MESSIM">V-Lab</a>,</p>
+</div>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>Long-run Marginal Exepected Shortfall (LRMES) measures the expected firm
+return conditional on a systemic event, which is a market decline below
+a threshold <span class="math notranslate nohighlight">\(C\)</span> over a time horizon <span class="math notranslate nohighlight">\(h\)</span>.</p>
+<p>If the multiperiod arithmetic market return between <span class="math notranslate nohighlight">\(t+1\)</span> to
+<span class="math notranslate nohighlight">\(t+h\)</span> is <span class="math notranslate nohighlight">\(R_{mt+1:t+h}\)</span>, then the systemic event is
+<span class="math notranslate nohighlight">\(\{R_{mt+1:t+h}&lt;C\}\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(LRMES_{it}\)</span> for firm <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> is then defined
+as</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[LRMES_{it} = -E_i[R_{it+1:t+h} | R_{mt+1:t+h} &lt; C]\]</div>
+</div>
+<p><a class="reference external" href="https://doi.org/10.1093/rfs/hhw060">Brownlees and Engle (2017)</a> use a
+<a class="reference internal" href="../../algorithms/gjr-garch-dcc/"><span class="doc">GJR-GARCH(1,1) - DCC</span></a> model to construct the LRMES
+predictions.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you’re new to econommetrics, I suggest the following sequence of
+readings.</p>
+<p>Univariate GARCH models:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../algorithms/garch/"><span class="doc">GARCH(1,1)</span></a>, Generalized Autoregressive Conditional
+Heteroskedasticity modelling.</p></li>
+<li><p><a class="reference internal" href="../../algorithms/gjr-garch/"><span class="doc">GJR-GARCH(1,1)</span></a> extends GARCH to take into account
+asymmetric effect of negative news.</p></li>
+</ol>
+<p>Multivariate GARCH models:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../algorithms/garch-ccc/"><span class="doc">GARCH(1,1) - CCC</span></a> captures both conditional variances
+and conditioal covariances, assuming constant correlation.</p></li>
+<li><p><a class="reference internal" href="../../algorithms/garch-dcc/"><span class="doc">GARCH(1,1) - DCC</span></a> further allows for time-varying
+correlations.</p></li>
+</ol>
+<p>Finally,</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../algorithms/gjr-garch-dcc/"><span class="doc">GJR-GARCH(1,1) - DCC</span></a> combines the above.</p></li>
+</ol>
+</div>
+</section>
+<section id="bivariate-gjr-garch-dcc">
+<h2>Bivariate GJR-GARCH-DCC<a class="headerlink" href="#bivariate-gjr-garch-dcc" title="Link to this heading">¶</a></h2>
+<p>Here, I dicuss the bivariate case in the context of computing
+<a class="reference internal" href="../srisk/"><span class="doc">SRISK</span></a>, where <span class="math notranslate nohighlight">\(i\)</span> index the firm and <span class="math notranslate nohighlight">\(m\)</span>
+refers to the market.</p>
+<section id="return-series">
+<h3>Return series<a class="headerlink" href="#return-series" title="Link to this heading">¶</a></h3>
+<p>Let firm and market log returns be <span class="math notranslate nohighlight">\(r_{it} = \log(1 + R_{it})\)</span> and
+<span class="math notranslate nohighlight">\(r_{mt} = \log(1 + R_{mt})\)</span>. Conditional on the information set
+<span class="math notranslate nohighlight">\(\mathcal{F}_{t-1}\)</span> available at time <span class="math notranslate nohighlight">\(t-1\)</span>, the return pair
+has an (unspecified) distribution <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> with zero mean and
+time-varying covariance,</p>
+<div class="math-wrapper docutils container" id="equation-eq-garch-dcc">
+<div class="math notranslate nohighlight" id="equation-eq-garch-dcc">
+<span class="eqno">(1)<a class="headerlink" href="#equation-eq-garch-dcc" title="Link to this equation">¶</a></span>\[\begin{split} \begin{bmatrix}r_{it} \\ r_{mt}\end{bmatrix} | \mathcal F_{t-1} \sim \mathcal D\left(\mathbf 0, \begin{bmatrix}\sigma_{it}^2 &amp; \rho_{it}\sigma_{it}\sigma_{mt} \\\\ \rho_{it}\sigma_{it}\sigma_{mt} &amp; \sigma_{mt}^2 \end{bmatrix}\right)\end{split}\]</div>
+</div>
+<p>Alternatively, I present below the constant mean form of return series,</p>
+<div class="math-wrapper docutils container" id="equation-return-eqn-1">
+<div class="math notranslate nohighlight" id="equation-return-eqn-1">
+<span class="eqno">(2)<a class="headerlink" href="#equation-return-eqn-1" title="Link to this equation">¶</a></span>\[r_{it} = \mu_i + \epsilon_{it}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-return-eqn-2">
+<div class="math notranslate nohighlight" id="equation-return-eqn-2">
+<span class="eqno">(3)<a class="headerlink" href="#equation-return-eqn-2" title="Link to this equation">¶</a></span>\[r_{mt} = \mu_m + \epsilon_{mt}\]</div>
+</div>
+<p>where,</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu=0\)</span> assumes zero-mean. One can also assume a constant
+mean or even other structure.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon_{it} = \sigma_{it} z_{it}\)</span>, <span class="math notranslate nohighlight">\(\epsilon_{mt} =
+\sigma_{mt} z_{mt}\)</span>, where <span class="math notranslate nohighlight">\(\sigma_{it}\)</span> is the conditional
+volatility at time <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(z_{it}, z_{mt}\)</span> are standarized residuals that follow an unknown bivariate distribution with
+zero mean and maybe some covariance structure. However, generally we can assume <span class="math notranslate nohighlight">\(z_{it}\)</span> and <span class="math notranslate nohighlight">\(z_{mt}\)</span> are i.i.d.
+standard normal</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>In a DCC-GARCH model, assuming that the shock innovation <span class="math notranslate nohighlight">\(z\)</span> is
+standard normally distributed only implies that the conditional
+innovations are normal given the past information. It does <strong>not</strong>
+imply that the returns themselves are normally distributed.</p>
+<p>The returns <span class="math notranslate nohighlight">\(r\)</span> in a GARCH framework are often modeled as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[r_t = \mu_t + \sigma_t \cdot z_t\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mu_t\)</span> is the conditional mean, <span class="math notranslate nohighlight">\(\sigma_t\)</span> is the
+conditional volatility, and <span class="math notranslate nohighlight">\(z_t\)</span> is the innovation term.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_t\)</span> could be modeled in many ways, perhaps as a function
+of past returns or other variables, and this will affect the
+distribution of <span class="math notranslate nohighlight">\(r_t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma_t\)</span> is also a function of past volatilities and
+innovations, and hence varies over time, even if <span class="math notranslate nohighlight">\(z_t\)</span> is
+standard normal.</p></li>
+</ul>
+<p>So, while <span class="math notranslate nohighlight">\(z_t\)</span> might be standard normal, <span class="math notranslate nohighlight">\(\sigma_t \cdot
+z_t\)</span> is normal but not standard normal, and <span class="math notranslate nohighlight">\(\mu_t + \sigma_t
+\cdot z_t\)</span> may not be normal at all depending on the form of
+<span class="math notranslate nohighlight">\(\mu_t\)</span>. Therefore, the assumption about <span class="math notranslate nohighlight">\(z\)</span> being
+standard normal is about the standardized returns or innovations, not
+the raw returns <span class="math notranslate nohighlight">\(r\)</span>. <strong>This is the reason why the return pair
+has an (unspecified) distribution</strong> <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.</p>
+</div>
+</section>
+<section id="conditional-variance">
+<h3>Conditional variance<a class="headerlink" href="#conditional-variance" title="Link to this heading">¶</a></h3>
+<p>Specifically, the GJR-GARCH models the conditional variances as:</p>
+<div class="math-wrapper docutils container" id="equation-eq-gjr-garch">
+<div class="math notranslate nohighlight" id="equation-eq-gjr-garch">
+<span class="eqno">(4)<a class="headerlink" href="#equation-eq-gjr-garch" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align*}
+\sigma_{it}^2 &amp;= \omega_{i} + \alpha_{i} \epsilon^2_{it-1} + \gamma_{i} \epsilon^2_{it-1} I^-_{it-1} + \beta_{i} \sigma^2_{it-1}, \\\\
+\sigma_{mt}^2 &amp;= \omega_{m} + \alpha_{m} \epsilon^2_{mt-1} + \gamma_{m} \epsilon^2_{mt-1} I^-_{mt-1} + \beta_{m} \sigma^2_{mt-1}
+\end{align*}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(I^-_{it} = 1\)</span> if <span class="math notranslate nohighlight">\(r_{it} &lt; 0\)</span> and <span class="math notranslate nohighlight">\(I^-_{mt} =
+1\)</span> if <span class="math notranslate nohighlight">\(r_{mt} &lt; 0\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://doi.org/10.1093/rfs/hhw060">Brownlees and Engle (2017)</a> use a
+zero-mean assumption, so that <span class="math notranslate nohighlight">\(r\)</span> is used in the above equation
+instead of the residual <span class="math notranslate nohighlight">\(\epsilon\)</span>. They use <span class="math notranslate nohighlight">\(\epsilon\)</span> to denote
+the standardized residual, which in this note is <span class="math notranslate nohighlight">\(z\)</span> to be consistent
+with other notes of <code class="docutils literal notranslate"><span class="pre">frds</span></code>.</p>
+</div>
+</section>
+<section id="dynamic-correlation">
+<h3>Dynamic correlation<a class="headerlink" href="#dynamic-correlation" title="Link to this heading">¶</a></h3>
+<p>With these individual variances, the <strong>Dynamic Conditional Correlation
+(DCC)</strong> models the covariance matrix <span class="math notranslate nohighlight">\(\mathbf{H}_t\)</span> as:</p>
+<div class="math-wrapper docutils container" id="equation-conditional-cov-matrix-modified">
+<div class="math notranslate nohighlight" id="equation-conditional-cov-matrix-modified">
+<span class="eqno">(5)<a class="headerlink" href="#equation-conditional-cov-matrix-modified" title="Link to this equation">¶</a></span>\[\begin{split}    \mathbf{H}_t = \begin{pmatrix}
+    \sigma^2_{it} &amp; \rho_{it}\sigma_{it} \sigma_{mt} \\\\
+    \rho_{it}\sigma_{it} \sigma_{mt} &amp; \sigma^2_{mt}
+    \end{pmatrix} = \mathbf{D}_t\mathbf{R}_t\mathbf{D}_t\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{D}_t=\begin{bmatrix}\sigma_{it} &amp; 0 \\\\ 0 &amp;
+\sigma_{mt}\end{bmatrix}\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{R_t}=\begin{bmatrix}1 &amp;
+\rho_t \\\\ \rho_t &amp; 1\end{bmatrix}\)</span> is the correlation matrix of the
+volatility-adjusted returns <span class="math notranslate nohighlight">\(z = (r-\mu)/\sigma\)</span> (standardized
+residuals from the return model).</p>
+</section>
+<section id="a-proxy-process-for-r">
+<h3>A proxy process for R<a class="headerlink" href="#a-proxy-process-for-r" title="Link to this heading">¶</a></h3>
+<p>As discussed in <a class="reference internal" href="../../algorithms/gjr-garch-dcc/"><span class="doc">GJR-GARCH(1,1) - DCC</span></a>, Engle (2002) models
+the time-varying <span class="math notranslate nohighlight">\(\mathbf{R}_t\)</span> via a proxy process
+<span class="math notranslate nohighlight">\(\mathbf{Q}_t\)</span>.</p>
+<div class="math-wrapper docutils container" id="equation-eq-dcc-corr">
+<div class="math notranslate nohighlight" id="equation-eq-dcc-corr">
+<span class="eqno">(6)<a class="headerlink" href="#equation-eq-dcc-corr" title="Link to this equation">¶</a></span>\[\begin{split}\mathbf{R}_t = \text{Corr}\begin{pmatrix}
+z_{it} \\\\
+z_{mt}
+\end{pmatrix}
+= \begin{bmatrix}
+1 &amp; \rho_{it} \\\\
+\rho_{it} &amp; 1
+\end{bmatrix}
+= \text{diag}(\mathbf{Q}_{it})^{-1/2} \mathbf{Q}_{it} \text{diag}(\mathbf{Q}_{it})^{-1/2}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{Q}_{it}\)</span> is the so-called pseudo correlation
+matrix.</p>
+<div class="math-wrapper docutils container" id="equation-eq-q-matrix">
+<div class="math notranslate nohighlight" id="equation-eq-q-matrix">
+<span class="eqno">(7)<a class="headerlink" href="#equation-eq-q-matrix" title="Link to this equation">¶</a></span>\[\begin{split}\mathbf{Q}_{it} = \begin{bmatrix}
+q_{it} &amp; q_{imt} \\\\
+q_{imt} &amp; q_{mt}
+\end{bmatrix}\end{split}\]</div>
+</div>
+<p>The DCC then models the dynamics of <span class="math notranslate nohighlight">\(\mathbf{Q}_{it}\)</span> as</p>
+<div class="math-wrapper docutils container" id="equation-eq-dcc-dynamics">
+<div class="math notranslate nohighlight" id="equation-eq-dcc-dynamics">
+<span class="eqno">(8)<a class="headerlink" href="#equation-eq-dcc-dynamics" title="Link to this equation">¶</a></span>\[\mathbf{Q}_{it} = (1-a-b) \bar{\mathbf{Q}}_i + a \mathbf{z}_{t-1} \mathbf{z}'_{t-1} + b \mathbf{Q}_{it-1}\]</div>
+</div>
+<p>where,</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\bar{\mathbf{Q}}_i\)</span> is the unconditional correlation matrix of
+the firm and market adjusted returns (standardized residuals), and</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{z}_{t-1} = \begin{bmatrix}\epsilon_{it-1}/\sigma_{it}
+\\\\ \epsilon_{mt-1}/\sigma_{mt} \end{bmatrix} =
+\begin{bmatrix}(r_{it-1}-\mu_i)/\sigma_{it} \\\\
+(r_{mt-1}-\mu_m)/\sigma_{mt} \end{bmatrix}\)</span></p></li>
+</ul>
+<p>The Q process is updated as follows:</p>
+<div class="math-wrapper docutils container" id="equation-q11">
+<div class="math notranslate nohighlight" id="equation-q11">
+<span class="eqno">(9)<a class="headerlink" href="#equation-q11" title="Link to this equation">¶</a></span>\[q_{it} = (1 - a - b) \overline{q}_{i} + a z^2_{i,t-1} + b q_{i,t-1}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-q22">
+<div class="math notranslate nohighlight" id="equation-q22">
+<span class="eqno">(10)<a class="headerlink" href="#equation-q22" title="Link to this equation">¶</a></span>\[q_{mt} = (1 - a - b) \overline{q}_{m} + a z^2_{m,t-1} + b q_{m,t-1}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-q12">
+<div class="math notranslate nohighlight" id="equation-q12">
+<span class="eqno">(11)<a class="headerlink" href="#equation-q12" title="Link to this equation">¶</a></span>\[q_{imt} = (1 - a - b) \overline{q}_{im} + a z_{i,t-1} z_{m,t-1} + b q_{im,t-1}\]</div>
+</div>
+<p>The dynamic conditional correlation <span class="math notranslate nohighlight">\(\rho_t\)</span> is given by:</p>
+<div class="math-wrapper docutils container" id="equation-rho-t">
+<div class="math notranslate nohighlight" id="equation-rho-t">
+<span class="eqno">(12)<a class="headerlink" href="#equation-rho-t" title="Link to this equation">¶</a></span>\[\rho_{it} = \frac{q_{imt}}{\sqrt{q_{it} q_{mt}}}\]</div>
+</div>
+</section>
+<section id="estimating-gjr-garch-dcc">
+<h3>Estimating GJR-GARCH-DCC<a class="headerlink" href="#estimating-gjr-garch-dcc" title="Link to this heading">¶</a></h3>
+<p>The above model is typically estimated by a two-step QML estimation
+procedure. More extensive details on this modeling approach and
+estimation are provided in <a class="reference external" href="http://www.jstor.org/stable/j.ctt7sb6w">Engle (2009)</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Equation 4.33 in <a class="reference external" href="http://www.jstor.org/stable/j.ctt7sb6w">Engle (2009)</a> shows that the log
+likelihood can be additively divided into two parts, one concerns the
+variance and the other concerns correlation. Therefore, we can solve
+for the variance and correlation parameters in two separate steps,
+hence “two-step” QML.</p>
+<p>See the loglikelihood function section of
+<a class="reference internal" href="../../algorithms/gjr-garch-dcc/"><span class="doc">GJR-GARCH(1,1) - DCC</span></a> for more.</p>
+</div>
+<p>Specifically, we first estimate a GJR-GARCH(1,1) for each firm (and
+market)’s log return series to obtain the conditional volatilities
+<span class="math notranslate nohighlight">\(\sigma\)</span> and hence <span class="math notranslate nohighlight">\(z = (r-\mu)/\sigma\)</span>. In the second step,
+we use the estimated coefficients to estimate the DCC model for each
+pair of firm returns and market returns.</p>
+<p>This is done via <a class="reference internal" href="../../algorithms/gjr-garch-dcc/#frds.algorithms.GJRGARCHModel_DCC" title="frds.algorithms.GJRGARCHModel_DCC"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel_DCC</span></code></a>.</p>
+</section>
+</section>
+<section id="computing-lrmes">
+<h2>Computing LRMES<a class="headerlink" href="#computing-lrmes" title="Link to this heading">¶</a></h2>
+<p>LRMES is computed via a simulation approach. Appendix A. Simulation
+Algorithm for LRMES in <a class="reference external" href="http://www.jstor.org/stable/j.ctt7sb6w">Engle (2009)</a> describes the exact steps to
+construct LRMES forecasts.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The general idea is to simulate market returns and use the estimated
+GJR-GARCH-DCC model to derive the corresponding firm returns. We then
+use the distribution of returns to estimate the firm’s LRMES.</p>
+</div>
+<p><strong>Step 1</strong>. Construct GJR-GARCH-DCC standardized innovations for the
+training sample <span class="math notranslate nohighlight">\(t=1,...,T\)</span>, where <span class="math notranslate nohighlight">\(\xi_{it}\)</span> is
+standardized, linearly orthogonal shocks of the firm to the market on
+day <span class="math notranslate nohighlight">\(t\)</span>,</p>
+<div class="math-wrapper docutils container" id="equation-eq-step1">
+<div class="math notranslate nohighlight" id="equation-eq-step1">
+<span class="eqno">(13)<a class="headerlink" href="#equation-eq-step1" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align}
+ z_{mt} &amp;= \frac{r_{mt}-\mu_m}{\sigma_{mt}} \\\\
+ \xi_{it} &amp;= \left(\frac{r_{it}-\mu_{i}}{\sigma_{it}} - \rho_{it} z_{mt}\right) / \sqrt{1-\rho^2_{it}}
+\end{align}\end{split}\]</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Given the conditional correlation <span class="math notranslate nohighlight">\(\rho\)</span> between the
+standardized residuals <span class="math notranslate nohighlight">\(z_i\)</span> and <span class="math notranslate nohighlight">\(z_m\)</span> from a bivariate
+(GJR)GARCH model under Dynamic Conditional Correlation (DCC), we can
+compute <span class="math notranslate nohighlight">\(z_i\)</span> given <span class="math notranslate nohighlight">\(z_m\)</span> using the following formula:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[z_i = \rho \times z_m + \sqrt{1 - \rho^2} \times \xi\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(\xi\)</span> is a standard normal random variable that is
+independent of <span class="math notranslate nohighlight">\(z_m\)</span>,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\xi = (z_i - \rho z_m) / \sqrt{1 - \rho^2}\]</div>
+</div>
+</div>
+<p><strong>Step 2</strong>. Sample with replacement <span class="math notranslate nohighlight">\(S\times h\)</span> pairs of
+<span class="math notranslate nohighlight">\([\xi_{it}, z_{mt}]'\)</span>, which are used as the simulated
+innovations from time <span class="math notranslate nohighlight">\(T+1\)</span> to <span class="math notranslate nohighlight">\(T+h\)</span>. Notice that in the
+algorithm, the innovations are simulated by resampling the standardized
+residuals of the GARCH-DCC rather than relying on parametric
+assumptions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Basically, we need residuals <span class="math notranslate nohighlight">\(\epsilon_{mT+t}=\sigma_{mT+t}z_{mT+t}\)</span>
+and <span class="math notranslate nohighlight">\(\epsilon_{iT+t}=\sigma_{iT+t}z_{iT+t}\)</span> for <span class="math notranslate nohighlight">\(t=1,...,h\)</span>.</p>
+<p>Requirements are</p>
+<ol class="arabic simple">
+<li><p>The standarized residuals <span class="math notranslate nohighlight">\(z_{iT+t}\)</span> and <span class="math notranslate nohighlight">\(z_{mT+t}\)</span> are i.i.d. normal.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon_{mT+t}\)</span> and <span class="math notranslate nohighlight">\(\epsilon_{iT+t}\)</span> have a conditional correlation <span class="math notranslate nohighlight">\(\rho_t\)</span>.</p></li>
+</ol>
+<p>Given conditional variance, conditional correlation, <span class="math notranslate nohighlight">\(z_{iT+t}\)</span> has to be</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[z_{iT+t} = \rho_t \times z_{mT+t} + \sqrt{1 - \rho_t^2} \times \xi_{iT+t}\]</div>
+</div>
+<p>We use the sampled (bootstrapped) <span class="math notranslate nohighlight">\(h\)</span> pairs of <span class="math notranslate nohighlight">\([\xi_{it}, z_{mt}]'\)</span>
+as <span class="math notranslate nohighlight">\([\xi_{iT+t}, z_{mT+t}]'\)</span> for <span class="math notranslate nohighlight">\(t=1,...,h\)</span>.</p>
+</div>
+<p><strong>Step 3</strong>. Use the pseudo sample of innovations as inputs of the DCC
+and (GJR)GARCH filters, respectively. Initial conditions are the last values
+of the conditional correlation <span class="math notranslate nohighlight">\(\rho_{iT}\)</span> and variances
+<span class="math notranslate nohighlight">\(\sigma^2_{iT}\)</span> and <span class="math notranslate nohighlight">\(\sigma^2_{mT}\)</span>. This step delivers
+<span class="math notranslate nohighlight">\(S\)</span> pseudo samples of (GJR)GARCH-DCC logarithmic returns from period
+<span class="math notranslate nohighlight">\(T+1\)</span> to period <span class="math notranslate nohighlight">\(T+h\)</span>, conditional on the realized process
+up to time <span class="math notranslate nohighlight">\(T\)</span>, that is</p>
+<div class="math-wrapper docutils container" id="equation-eq-step3">
+<div class="math notranslate nohighlight" id="equation-eq-step3">
+<span class="eqno">(14)<a class="headerlink" href="#equation-eq-step3" title="Link to this equation">¶</a></span>\[\begin{split}\begin{bmatrix}
+   r^s_{iT+t} \\\\
+   r^s_{mT+t}
+\end{bmatrix}_{t=1,...,h} | \mathcal{F}_{T}\end{split}\]</div>
+</div>
+<p>Specifically, in a simulation <span class="math notranslate nohighlight">\(s\)</span> with simulated innovations <span class="math notranslate nohighlight">\([\xi^s_{iT+t}, z^s_{mT+t}]'\)</span>,
+for the 1-step-ahead prediction, compute <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{iT+1}\)</span> and <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{mT+1}\)</span>,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{\sigma}^2_{iT+1} &amp;= \omega_i + \left[\alpha_i+\gamma_i I(\epsilon_{iT}&lt;0)\right] \epsilon_{iT}^2 + \beta_i {\sigma}^2_{iT} \\\\
+\hat{\sigma}^2_{mT+1} &amp;= \omega_m + \left[\alpha_m+\gamma_m I(\epsilon_{mT}&lt;0)\right] \epsilon_{mT}^2 + \beta_m {\sigma}^2_{mT}
+\end{align}\end{split}\]</div>
+</div>
+<p>where, <span class="math notranslate nohighlight">\(\sigma^2_{iT}\)</span> and <span class="math notranslate nohighlight">\(\sigma^2_{mT}\)</span> are the last conditional
+variances, <span class="math notranslate nohighlight">\(\epsilon_{iT}\)</span> and <span class="math notranslate nohighlight">\(\epsilon_{mT}\)</span> are the last residuals. All of these are known.</p>
+<p>The updated <span class="math notranslate nohighlight">\(Q_{T+1}\)</span> is given by</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{q}_{iT+1} &amp;= (1 - a - b) \overline{q}_{i} + a z^2_{iT} + b {q}_{iT} \\\\
+\hat{q}_{mT+1} &amp;= (1 - a - b) \overline{q}_{m} + a z^2_{mT} + b {q}_{mT} \\\\
+\hat{q}_{imT+1} &amp;= (1 - a - b) \overline{q}_{im} + a z_{iT} z_{mT} + b {q}_{imT}
+\end{align}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(z_{iT}\)</span> and <span class="math notranslate nohighlight">\(z_{mT}\)</span> are the last standardized residuals.
+<span class="math notranslate nohighlight">\(q_{iT}\)</span>, <span class="math notranslate nohighlight">\(q_{mT}\)</span> and <span class="math notranslate nohighlight">\(q_{imT}\)</span> are from the last <span class="math notranslate nohighlight">\(Q_T\)</span>.
+All of these are known.</p>
+<p>The 1-step-ahead conditional correlation <span class="math notranslate nohighlight">\(\hat{\rho}_{iT+1}\)</span> is given by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\hat{\rho}_{iT+1} = \frac{\hat{q}_{imT+1}}{\sqrt{\hat{q}_{iT+1} \hat{q}_{mT+1}}}\]</div>
+</div>
+<p>This conditional correlation <span class="math notranslate nohighlight">\(\hat{\rho}_{iT+1}\)</span> is then used to compute the 1-step-ahead returns
+given the 1-step-ahead forecast of conditional variances <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{iT+1}\)</span> and <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{mT+1}\)</span>,
+and innovations <span class="math notranslate nohighlight">\([\xi^s_{iT+1}, z^s_{mT+1}]'\)</span>,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{r}_{mT+1} &amp;= \mu_m + \hat{\epsilon}_{mT+1} = \mu_m + \hat{\sigma}_{mT+1} z^s_{mT+1} \\\\
+\hat{r}_{iT+1} &amp;= \mu_i + \hat{\epsilon}_{iT+1} = \mu_i + \hat{\sigma}_{iT+1} (\hat{\rho}_{iT+1} z^s_{mT+1} + \sqrt{1-\hat{\rho}^2_{iT+1}} \xi^s_{iT+1})
+\end{align}\end{split}\]</div>
+</div>
+<p>Then, for <span class="math notranslate nohighlight">\(h&gt;1\)</span>, we use the <span class="math notranslate nohighlight">\(h-1\)</span> forecasts as inputs.</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{\sigma}^2_{iT+h} &amp;= \omega_i + \left[\alpha_i+\gamma_i I(\hat{\epsilon}_{iT+h-1}&lt;0)\right] \hat{\epsilon}_{iT+h-1}^2 + \beta_i \hat{\sigma}^2_{iT+h-1} \\\\
+\hat{\sigma}^2_{mT+h} &amp;= \omega_m + \left[\alpha_m+\gamma_m I(\hat{\epsilon}_{mT+h-1}&lt;0)\right] \hat{\epsilon}_{mT+h-1}^2 + \beta_m \hat{\sigma}^2_{mT+h-1}
+\end{align}\end{split}\]</div>
+</div>
+<p>where,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{\epsilon}_{mT+h-1} &amp;= \hat{\sigma}_{mT+h-1} z^s_{mT+h-1} \\\\
+\hat{\epsilon}_{iT+h-1} &amp;= \hat{\sigma}_{iT+h-1} \left[\hat{\rho}_{iT+h-1} z^s_{mT+h-1} + \sqrt{1-\hat{\rho}^2_{iT+h-1}} \xi^s_{iT+h-1}\right]
+\end{align}\end{split}\]</div>
+</div>
+<p>Then, update DCC coefficients,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{q}_{iT+h} &amp;= (1 - a - b) \overline{q}_{i} + a {\left(\frac{\hat{\epsilon}_{iT+h-1}}{\hat{\sigma}_{iT+h-1}}\right)}^2 + b \hat{q}_{i,T+h-1} \\\\
+\hat{q}_{mT+h} &amp;= (1 - a - b) \overline{q}_{m} + a {\left(\frac{\hat{\epsilon}_{mT+h-1}}{\hat{\sigma}_{mT+h-1}}\right)}^2 + b \hat{q}_{m,T+h-1} \\\\
+\hat{q}_{imT+h} &amp;= (1 - a - b) \overline{q}_{im} + a \left(\frac{\hat{\epsilon}_{mT+h-1}}{\hat{\sigma}_{mT+h-1}}\frac{\hat{\epsilon}_{iT+h-1}}{\hat{\sigma}_{iT+h-1}}\right) + b \hat{q}_{im,T+h-1}
+\end{align}\end{split}\]</div>
+</div>
+<p>The dynamic conditional correlation <span class="math notranslate nohighlight">\(\hat{\rho}_{iT+h}\)</span> is given by:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\hat{\rho}_{iT+h} = \frac{\hat{q}_{imT+h}}{\sqrt{\hat{q}_{iT+h} \hat{q}_{mT+h}}}\]</div>
+</div>
+<p>This conditional correlation <span class="math notranslate nohighlight">\(\hat{\rho}_{iT+h}\)</span> is then used to compute the h-step-ahead returns
+given the h-step-ahead forecast of conditional variances <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{iT+h}\)</span> and <span class="math notranslate nohighlight">\(\hat{\sigma}^2_{mT+h}\)</span>,
+and innovations <span class="math notranslate nohighlight">\([\xi^s_{iT+h}, z^s_{mT+h}]'\)</span>,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\hat{r}_{mT+h} &amp;= \mu_m + \hat{\sigma}_{mT+h} z^s_{mT+h} \\\\
+\hat{r}_{iT+h} &amp;= \mu_i + \hat{\sigma}_{iT+h} (\hat{\rho}_{iT+h} z^s_{mT+h} + \sqrt{1-\hat{\rho}^2_{iT+h}} \xi^s_{iT+h})
+\end{align}\end{split}\]</div>
+</div>
+<p>So we have in this simulation
+<span class="math notranslate nohighlight">\(s\)</span> a set of market and firm (log) returns, <span class="math notranslate nohighlight">\(r^s_{iT+t}\)</span> and <span class="math notranslate nohighlight">\(r^s_{mT+t}\)</span>, <span class="math notranslate nohighlight">\(t=1,\dots,h\)</span>.</p>
+<p><strong>Step 4</strong>. Construct the multiperiod arithmetic firm (market) return of
+each pseudo sample,</p>
+<div class="math-wrapper docutils container" id="equation-eq-returns-sim">
+<div class="math notranslate nohighlight" id="equation-eq-returns-sim">
+<span class="eqno">(15)<a class="headerlink" href="#equation-eq-returns-sim" title="Link to this equation">¶</a></span>\[R^s_{iT+1:T+h} = \exp \left(\sum_{t=1}^{h} r^s_{iT+t} \right) -1\]</div>
+</div>
+<p><strong>Step 5</strong>. Compute LRMES as the Monte Carlo average of the simulated
+multiperiod arithmetic returns conditional on the systemic event,</p>
+<div class="math-wrapper docutils container" id="equation-eq-lrmes-est">
+<div class="math notranslate nohighlight" id="equation-eq-lrmes-est">
+<span class="eqno">(16)<a class="headerlink" href="#equation-eq-lrmes-est" title="Link to this equation">¶</a></span>\[LRMES_{iT} = - \frac{\sum_{s=1}^S R^s_{iT+1:T+h} I(R^s_{mT+1:T+h}&lt;C)}{\sum_{s=1}^S I(R^s_{mT+1:T+h}&lt;C)}\]</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This LRMES estimate can then be used to compute <a class="reference internal" href="../srisk/"><span class="doc">SRISK</span></a>.</p>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1093/rfs/hhw060">Brownlees and Engle (2017)</a>,
+<em>SRISK: A Conditional Capital Shortfall Measure of Systemic Risk</em>,
+Review of Financial Studies, 30 (1), 48–79.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1111/j.1540-6261.1993.tb05128.x">Glosten, L. R., Jagannathan, R., &amp; Runkle, D. E. (1993)</a>, “On the
+Relation Between the Expected Value and the Volatility of the Nominal
+Excess Return on Stocks.” <em>The Journal of Finance</em>, 48(5), 1779-1801.</p></li>
+<li><p><a class="reference external" href="https://www.jstor.org/stable/1392121">Engle, R. (2002)</a>, “Dynamic
+Conditional Correlation: A Simple Class of Multivariate Generalized
+Autoregressive Conditional Heteroskedasticity Models.” <em>Journal of
+Business &amp; Economic Statistics</em>, 20(3), 339-350.</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="frds.measures.LRMES">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.</span></span><span class="sig-name descname"><span class="pre">LRMES</span></span><a class="headerlink" href="#frds.measures.LRMES" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#frds.measures.LongRunMarginalExpectedShortfall" title="frds.measures._long_run_mes.LongRunMarginalExpectedShortfall"><code class="xref py py-class docutils literal notranslate"><span class="pre">LongRunMarginalExpectedShortfall</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.measures.LongRunMarginalExpectedShortfall">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.measures.</span></span><span class="sig-name descname"><span class="pre">LongRunMarginalExpectedShortfall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">firm_returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/frds/measures/_long_run_mes/#LongRunMarginalExpectedShortfall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.LongRunMarginalExpectedShortfall" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#"><span class="doc">Long-Run Marginal Expected Shortfall (LRMES)</span></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.LongRunMarginalExpectedShortfall.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">firm_returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/frds/measures/_long_run_mes/#LongRunMarginalExpectedShortfall.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.LongRunMarginalExpectedShortfall.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>firm_returns</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n_days,)</span></code> array of the firm raw returns.</p></li>
+<li><p><strong>market_returns</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n_days,)</span></code> array of the market raw returns.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Raw returns should be used! They are automatically converted to log returns.
+Do NOT use percentage returns.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.LongRunMarginalExpectedShortfall.estimate">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">22</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/_long_run_mes/#LongRunMarginalExpectedShortfall.estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.LongRunMarginalExpectedShortfall.estimate" title="Link to this definition">¶</a></dt>
+<dd><p>h-step-ahead LRMES forecasts conditional on a systemic event of market decline C</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h</strong> (<em>int</em><em>, </em><em>optional</em>) – h-period-ahead prediction horizon. Defaults to 22.</p></li>
+<li><p><strong>S</strong> (<em>int</em><em>, </em><em>optional</em>) – sample size used in simulation to generate LRMES forecasts. Defaults to 10000.</p></li>
+<li><p><strong>C</strong> (<em>float</em><em>, </em><em>optional</em>) – market decline used to define systemic event. Defaults to -0.1, i.e. -10%.</p></li>
+<li><p><strong>random_seed</strong> (<em>int</em><em>, </em><em>optional</em>) – random seed. Defaults to 42.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the firm’s LRMES forecast</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.LongRunMarginalExpectedShortfall.simulation">
+<span class="sig-name descname"><span class="pre">simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">innovation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firm_var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkt_var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firm_resid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkt_resid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/frds/measures/_long_run_mes/#LongRunMarginalExpectedShortfall.simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.LongRunMarginalExpectedShortfall.simulation" title="Link to this definition">¶</a></dt>
+<dd><p>A simulation to compute the firm’s return given the parameters.
+This method should be used internally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>innovation</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(h,2)</span></code> array of market and firm innovations</p></li>
+<li><p><strong>C</strong> (<em>float</em>) – market decline used to define systemic event. Defaults to -0.1, i.e. -10%.</p></li>
+<li><p><strong>firm_var</strong> (<em>float</em>) – the firm conditional variance at time <span class="math notranslate nohighlight">\(T\)</span>, used as starting value in forecast</p></li>
+<li><p><strong>mkt_var</strong> (<em>float</em>) – the market conditional variance at time <span class="math notranslate nohighlight">\(T\)</span>, used as starting value in forecast</p></li>
+<li><p><strong>firm_resid</strong> (<em>float</em>) – the firm residual at time <span class="math notranslate nohighlight">\(T\)</span>, used as starting value in forecast</p></li>
+<li><p><strong>mkt_resid</strong> (<em>float</em>) – the market residual at time <span class="math notranslate nohighlight">\(T\)</span>, used as starting value in forecast</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – DCC parameter</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – DCC parameter</p></li>
+<li><p><strong>rho</strong> (<em>float</em>) – the last conditional correlation at time <span class="math notranslate nohighlight">\(T\)</span>, used as starting value in forecast</p></li>
+<li><p><strong>Q_bar</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(2,2)</span></code> array of sample correlation matrix of standarized residuals</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of the firm return and whether a systemic event occurs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[float, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Download daily price data for GS and SP500 and compute returns.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRMES</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">download</span><span class="p">([</span><span class="s1">&#39;GS&#39;</span><span class="p">,</span> <span class="s1">&#39;^GSPC&#39;</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="s1">&#39;1999-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2022-12-31&#39;</span><span class="p">)[</span><span class="s1">&#39;Adj Close&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;GS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;GS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;^GSPC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;^GSPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Compute LRMES, conditioal on a 40% market decline over the next six months.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lrmes</span> <span class="o">=</span> <span class="n">LRMES</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;GS&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;^GSPC&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lrmes</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">S</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">22</span><span class="o">*</span><span class="mi">6</span><span class="p">,</span> <span class="n">C</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="go">0.3798383812883635</span>
+</pre></div>
+</div>
+<p>Additionally, below is an example output for estimating the daily LRMES for GS
+using parallel computing.</p>
+<img alt="../../_images/GS_LRMES.png" src="../../_images/GS_LRMES.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These estimates are similar to NYU’s
+<a class="reference external" href="https://vlab.stern.nyu.edu/srisk/RISK.USFIN-MR.MESSIM">V-Lab</a>,
+which is more stable and on average higher. V-Lab’s simulated LRMES is
+typically above 40%.</p>
+<p>Possible reasons include differences in</p>
+<ol class="arabic simple">
+<li><p>the training sample</p></li>
+<li><p>the (GJR)GARCH-DCC model specification and estimation, where V-Lab uses
+a zero-mean return model but I use a constant mean</p></li>
+<li><p>the number of simulations, sampling of past residuals, etc.</p></li>
+</ol>
+</div>
+<p>This is computed using the following code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRMES</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_lrmes_for_date</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">date</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="mi">2001</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">sub_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:</span><span class="n">date</span><span class="p">]</span>
+    <span class="n">lrmes</span> <span class="o">=</span> <span class="n">LRMES</span><span class="p">(</span><span class="n">sub_data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">],</span> <span class="n">sub_data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="mi">22</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span> <span class="n">C</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">((</span><span class="n">date</span><span class="p">,</span> <span class="n">lrmes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">lrmes</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Download daily price data for GS and SP500</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">download</span><span class="p">([</span><span class="s2">&quot;GS&quot;</span><span class="p">,</span> <span class="s2">&quot;^GSPC&quot;</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="s2">&quot;1994-01-01&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;2022-12-31&quot;</span><span class="p">)[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">]</span>
+
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS_Price&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">cumprod</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC_Price&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">cumprod</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+
+    <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="n">lrmes_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">compute_lrmes_for_date</span><span class="p">,</span>
+                <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">lrmes_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lrmes_values</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">lrmes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">lrmes_values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;LRMES&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge_asof</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lrmes_df</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LRMES</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">dcc_model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS Volatility&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">dcc_model</span><span class="o">.</span><span class="n">model1</span><span class="o">.</span><span class="n">sigma2</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;S&amp;P500 Volatility&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">dcc_model</span><span class="o">.</span><span class="n">model2</span><span class="o">.</span><span class="n">sigma2</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot data</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GS data&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SP500 data&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Daily Returns&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Returns&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS_Price&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GS Indexed Price&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;^GSPC_Price&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SP500 Indexed Price&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Indexed Prices&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Indexed Price&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;GS Volatility&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GS Volatility&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;S&amp;P500 Volatility&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;S&amp;P500 Volatility&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Conditional Volatility&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Conditional Volatility&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;LRMES&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;GS LRMES&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;LRMES - Conditional on a 40% Market Decline in Six Months&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;LRMES&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;./GS_LRMES.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../marginal_expected_shortfall/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Marginal Expected Shortfall</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../limit_order_book_slope/">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Limit Order Book Slope</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 - 2024, Mingze Gao
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mgao6767/frds" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Long-Run Marginal Expected Shortfall (LRMES)</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#bivariate-gjr-garch-dcc">Bivariate GJR-GARCH-DCC</a><ul>
+<li><a class="reference internal" href="#return-series">Return series</a></li>
+<li><a class="reference internal" href="#conditional-variance">Conditional variance</a></li>
+<li><a class="reference internal" href="#dynamic-correlation">Dynamic correlation</a></li>
+<li><a class="reference internal" href="#a-proxy-process-for-r">A proxy process for R</a></li>
+<li><a class="reference internal" href="#estimating-gjr-garch-dcc">Estimating GJR-GARCH-DCC</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computing-lrmes">Computing LRMES</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#frds.measures.LRMES"><code class="docutils literal notranslate"><span class="pre">LRMES</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.LongRunMarginalExpectedShortfall"><code class="docutils literal notranslate"><span class="pre">LongRunMarginalExpectedShortfall</span></code></a><ul>
+<li><a class="reference internal" href="#frds.measures.LongRunMarginalExpectedShortfall.__init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.LongRunMarginalExpectedShortfall.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.LongRunMarginalExpectedShortfall.simulation"><code class="docutils literal notranslate"><span class="pre">simulation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=187304be"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=35a8b989"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

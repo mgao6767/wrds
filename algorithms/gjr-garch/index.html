@@ -1,0 +1,857 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="GJR-GARCH(1,1) - DCC" href="../gjr-garch-dcc/" /><link rel="prev" title="GARCH(1,1) - DCC" href="../garch-dcc/" />
+        <link rel="canonical" href="https://frds.io/algorithms/gjr-garch/" />
+
+    <link rel="shortcut icon" href="../../_static/frds.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>GJR-GARCH(1,1) - frds</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=415d3439" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">frds</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/frds_icon.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">frds</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../measures/">Supported Measures</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Supported Measures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/absorption_ratio/">Absorption Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/contingent_claim_analysis/">Contingent Claim Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/distress_insurance_premium/">Distress Insurance Premium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/kyle_lambda/">Kyle’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/lerner_index/">Lerner Index (Banks)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/limit_order_book_slope/">Limit Order Book Slope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/long_run_mes/">Long-Run Marginal Expected Shortfall (LRMES)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/marginal_expected_shortfall/">Marginal Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/option_prices/">Option Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/probability_of_informed_trading/">Probability of Informed Trading (PIN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/spread_and_price_impact/">Spread and Price Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/srisk/">SRISK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/systemic_expected_shortfall/">Systemic Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/z_score/">Z-score</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Algorithms</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../garch/">GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../garch-ccc/">GARCH(1,1) - CCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../garch-dcc/">GARCH(1,1) - DCC</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GJR-GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gjr-garch-dcc/">GJR-GARCH(1,1) - DCC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../datasets/">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/stock-returns/">Stock Returns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/mgao6767/frds/">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mingze-gao.com">Mingze Gao</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/algorithms/gjr-garch.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="gjr-garch-1-1">
+<h1>GJR-GARCH(1,1)<a class="headerlink" href="#gjr-garch-1-1" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>The GJR-GARCH model extends the basic <a class="reference internal" href="../garch/"><span class="doc">GARCH(1,1)</span></a>  by accounting for leverage effects, where bad news (negative returns) has a greater impact on volatility than good news.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Check <a class="reference internal" href="#examples">Examples</a> section for code guide and comparison to Stata.</p>
+</div>
+<section id="return-equation">
+<h3>Return equation<a class="headerlink" href="#return-equation" title="Link to this heading">¶</a></h3>
+<p>There are many ways to specify return dynamics. Here a constant mean model is used.</p>
+<div class="math-wrapper docutils container" id="equation-return-eq">
+<div class="math notranslate nohighlight" id="equation-return-eq">
+<span class="eqno">(1)<a class="headerlink" href="#equation-return-eq" title="Link to this equation">¶</a></span>\[r_t = \mu + \epsilon_t\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(r_t\)</span> is the asset return at time <span class="math notranslate nohighlight">\(t\)</span>, <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the asset return, and <span class="math notranslate nohighlight">\(\epsilon_t\)</span> is the shock term.</p>
+</section>
+<section id="shock-equation">
+<h3>Shock equation<a class="headerlink" href="#shock-equation" title="Link to this heading">¶</a></h3>
+<p>The shock term <span class="math notranslate nohighlight">\(\epsilon_t\)</span> can be decomposed as:</p>
+<div class="math-wrapper docutils container" id="equation-shock-eq">
+<div class="math notranslate nohighlight" id="equation-shock-eq">
+<span class="eqno">(2)<a class="headerlink" href="#equation-shock-eq" title="Link to this equation">¶</a></span>\[\epsilon_t = \sigma_t z_t\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma_t\)</span> is the conditional volatility and <span class="math notranslate nohighlight">\(z_t \sim N(0, 1)\)</span> a standard normal noise term.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We can also assume that the noise term follows a different distribution, such as Student-t, and modify the likelihood function below accordingly.</p>
+</div>
+</section>
+<section id="volatility-equation">
+<h3>Volatility equation<a class="headerlink" href="#volatility-equation" title="Link to this heading">¶</a></h3>
+<p>The conditional volatility in GJR-GARCH(1,1) is given by:</p>
+<div class="math-wrapper docutils container" id="equation-volatility-eq">
+<div class="math notranslate nohighlight" id="equation-volatility-eq">
+<span class="eqno">(3)<a class="headerlink" href="#equation-volatility-eq" title="Link to this equation">¶</a></span>\[\sigma^2_t = \omega + \alpha \epsilon_{t-1}^2 + \gamma \epsilon_{t-1}^2 I_{t-1} + \beta \sigma_{t-1}^2\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(I_{t-1} = 1\)</span> if <span class="math notranslate nohighlight">\(\epsilon_{t-1} &lt; 0\)</span> and 0 otherwise. <span class="math notranslate nohighlight">\(\omega, \alpha, \gamma, \beta\)</span> are parameters to be estimated. The term <span class="math notranslate nohighlight">\(\gamma \epsilon_{t-1}^2 I_{t-1}\)</span> captures the leverage effect.</p>
+<div class="note admonition">
+<p class="admonition-title">The unconditional variance and persistence</p>
+<p>The unconditional variance, often denoted as <span class="math notranslate nohighlight">\(\text{Var}(\epsilon_t)\)</span> or <span class="math notranslate nohighlight">\(\sigma^2\)</span>, refers to the long-run average or steady-state variance of the return series. It is the variance one would expect the series to revert to over the long term, and it doesn’t condition on any past information.</p>
+<p>For a GJR-GARCH(1,1) model to be stationary, the <strong>persistence</strong> must be less than 1 ( <span class="math notranslate nohighlight">\(\alpha + \beta + \gamma/2 &lt; 1\)</span> ). Given this condition, the unconditional variance <span class="math notranslate nohighlight">\(\sigma^2\)</span> can be computed as follows:</p>
+<div class="math-wrapper docutils container" id="equation-unconditional-variance-formula">
+<div class="math notranslate nohighlight" id="equation-unconditional-variance-formula">
+<span class="eqno">(4)<a class="headerlink" href="#equation-unconditional-variance-formula" title="Link to this equation">¶</a></span>\[\sigma^2 = \frac{\omega}{1 - (\alpha + \gamma / 2 + \beta)}\]</div>
+</div>
+<p>Note that the division by 2 for <span class="math notranslate nohighlight">\(\gamma\)</span> assumes that the leverage effect occurs about half the time, given that <span class="math notranslate nohighlight">\(I_{t-1}\)</span> takes the value 1 if the return is negative and 0 otherwise.</p>
+</div>
+</section>
+<section id="log-likelihood-function">
+<h3>Log-likelihood function<a class="headerlink" href="#log-likelihood-function" title="Link to this heading">¶</a></h3>
+<p>The log-likelihood function for the GJR-GARCH(1,1) <span class="math notranslate nohighlight">\(\ell(\mu, \omega, \alpha, \beta)\)</span> is:</p>
+<div class="math-wrapper docutils container" id="equation-log-likelihood">
+<div class="math notranslate nohighlight" id="equation-log-likelihood">
+<span class="eqno">(5)<a class="headerlink" href="#equation-log-likelihood" title="Link to this equation">¶</a></span>\[\ell(\mu, \omega, \alpha, \gamma, \beta)= -\frac{1}{2} \sum_{t=1}^T \left[ \ln(2\pi) + \ln(\sigma_t^2) + \frac{(r_t - \mu)^2}{\sigma_t^2} \right]\]</div>
+</div>
+<p>The parameters <span class="math notranslate nohighlight">\(\mu, \omega, \alpha, \gamma, \beta\)</span> can then be estimated by maximizing this log-likelihood function.</p>
+</section>
+</section>
+<section id="estimation-techniques">
+<h2>Estimation techniques<a class="headerlink" href="#estimation-techniques" title="Link to this heading">¶</a></h2>
+<p>A few tips to improve the estimation and enhance its numerical stability.
+These are basically the same as in estimating <a class="reference internal" href="../garch/"><span class="doc">GARCH(1,1)</span></a>.</p>
+<section id="initial-value-of-conditional-variance">
+<h3>Initial value of conditional variance<a class="headerlink" href="#initial-value-of-conditional-variance" title="Link to this heading">¶</a></h3>
+<p>Note that the conditional variance in a GJR-GARCH(1,1) model is <a class="reference internal" href="#equation-volatility-eq">(3)</a>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sigma^2_t = \omega + \alpha \epsilon_{t-1}^2 + \gamma \epsilon_{t-1}^2 I_{t-1} + \beta \sigma_{t-1}^2\]</div>
+</div>
+<p>We need a good starting value <span class="math notranslate nohighlight">\(\sigma_0^2\)</span> to begin with, which can be estimated via the <strong>backcasting technique</strong>. Once we have that <span class="math notranslate nohighlight">\(\sigma^2_0\)</span> through backcasting, we can proceed to calculate the entire series of conditional variances using the standard GARCH recursion formula.</p>
+<p>To backcast the initial variance, we can use the Exponential Weighted Moving Average (EWMA) method, setting <span class="math notranslate nohighlight">\(\sigma^2_0\)</span> to the EWMA of the sample variance of the first <span class="math notranslate nohighlight">\(n \leq T\)</span> returns:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sigma^2_0 = \sum_{t=1}^{n} w_t \cdot r_t^2\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(w_t\)</span> are the exponentially decaying weights and <span class="math notranslate nohighlight">\(r_t\)</span> are residuals of returns, i.e., returns de-meaned by sample average. This <span class="math notranslate nohighlight">\(\sigma^2_0\)</span> is then used to derive <span class="math notranslate nohighlight">\(\sigma^2_1\)</span> the starting value for the conditional variance series.</p>
+</section>
+<section id="initial-value-of-omega">
+<h3>Initial value of <span class="math notranslate nohighlight">\(\omega\)</span><a class="headerlink" href="#initial-value-of-omega" title="Link to this heading">¶</a></h3>
+<p>The starting value of <span class="math notranslate nohighlight">\(\omega\)</span> is relatively straightforward. Note that the unconditional variance is given by <a class="reference internal" href="#equation-unconditional-variance-formula">(4)</a>: <span class="math notranslate nohighlight">\(\sigma^2 = \frac{\omega}{1-\alpha-\gamma/2-\beta}\)</span>. Therefore, given a level of persistence (<span class="math notranslate nohighlight">\(\alpha+\gamma/2+\beta\)</span>), we can set the initial guess of <span class="math notranslate nohighlight">\(\omega\)</span> to be the sample variance times one minus persistence:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\omega = \hat{\sigma}^2 \cdot \left(1-\alpha-\gamma/2-\beta\right)\]</div>
+</div>
+<p>where we use the known sample variance of residuals <span class="math notranslate nohighlight">\(\hat{\sigma}^2\)</span> as a guess for the unconditional variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>. However, we still need to find good starting values for <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\gamma\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>.</p>
+</section>
+<section id="initial-value-of-alpha-gamma-and-beta">
+<h3>Initial value of <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\gamma\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span><a class="headerlink" href="#initial-value-of-alpha-gamma-and-beta" title="Link to this heading">¶</a></h3>
+<p>Finding good starting values for <span class="math notranslate nohighlight">\(\alpha\)</span> <span class="math notranslate nohighlight">\(\gamma\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> can be done by a small grid search.</p>
+<ul class="simple">
+<li><p>First, we don’t know ex ante the persistence level, so we need to vary the persistence level from some low values to some high values, e.g., from 0.1 to 0.98.</p></li>
+<li><p>Second, generally the <span class="math notranslate nohighlight">\(\alpha\)</span> parameter is not too big, for example, ranging from 0.01 to 0.2.</p></li>
+<li><p>Third, the leverage effect <span class="math notranslate nohighlight">\(\gamma\)</span> is generally not big too. We can set it to be in the same range as <span class="math notranslate nohighlight">\(\alpha\)</span>.</p></li>
+</ul>
+<p>We can permute combinations of the persistence level, <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span>, which naturally gives the corresponding <span class="math notranslate nohighlight">\(\beta\)</span> and hence <span class="math notranslate nohighlight">\(\omega\)</span>. The “optimal” set of initial values of <span class="math notranslate nohighlight">\(\omega, \alpha, \gamma, \beta\)</span> is the one that gives the highest log-likelihood.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The initial value of <span class="math notranslate nohighlight">\(\mu\)</span> is reasonably set to the sample mean return.</p>
+</div>
+</section>
+<section id="variance-bounds">
+<h3>Variance bounds<a class="headerlink" href="#variance-bounds" title="Link to this heading">¶</a></h3>
+<p>Another issue is that we want to ensure that in the estimation, condition variance
+does not blow up to infinity or becomes zero. Hence, we need to
+construct bounds for conditional variances during the GJR-GARCH(1,1) parameter estimation process.</p>
+<p>To do this, we can calculate loose lower and upper bounds for each observation.
+Specifically, we can use sample variance of the residuals to compute global lower and upper
+bounds. We then use EWMA to compute the conditional variance for each time point.
+The EWMA variances are then adjusted to ensure they are within global bounds.
+Lastly, we scale the adjusted EWMA variances to form the variance bounds at each
+time.</p>
+<p>During the estimation process, whenever we compute the conditional variances based
+on the prevailing model parameters, we ensure that they are adjusted to be reasonably
+within the bounds at each time.</p>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.2307/1912773">Engle, R. F. (1982)</a>, “Autoregressive Conditional Heteroskedasticity with Estimates of the Variance of United Kingdom Inflation.” <em>Econometrica</em>, 50(4), 987-1007.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1016/0304-4076(86)90063-1">Bollerslev, T. (1986)</a>, “Generalized Autoregressive Conditional Heteroskedasticity.” <em>Journal of Econometrics</em>, 31(3), 307-327.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1111/j.1540-6261.1993.tb05128.x">Glosten, L. R., Jagannathan, R., &amp; Runkle, D. E. (1993)</a>, “On the Relation Between the Expected Value and the Volatility of the Nominal Excess Return on Stocks.” <em>The Journal of Finance</em>, 48(5), 1779-1801.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arch</span></code> by <a class="reference external" href="https://doi.org/10.5281/zenodo.593254">Kevin Sheppard, et al</a>.</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.algorithms.</span></span><span class="sig-name descname"><span class="pre">GJRGARCHModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/frds/algorithms/_garch/#GJRGARCHModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GJRGARCHModel" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#"><span class="doc">GJR-GARCH(1,1)</span></a> model with constant mean and Normal noise</p>
+<p>It estimates the model parameters only. No standard errors calculated.</p>
+<p>This code is heavily based on the <a class="reference external" href="https://arch.readthedocs.io/">arch</a>.
+Modifications are made for easier understaing of the code flow.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.Parameters" title="frds.algorithms._garch.GJRGARCHModel.Parameters"><span class="pre">Parameters</span></a></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_garch/#GJRGARCHModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates the GJR-GARCH(1,1) parameters via MLE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[mu, omega, alpha, gamma, beta, loglikelihood]</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.compute_variance">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_variance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backcast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_garch/#GJRGARCHModel.compute_variance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.compute_variance" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the variances conditional on given parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – [omega, alpha, gamma, beta]</p></li>
+<li><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals from mean equation</p></li>
+<li><p><strong>backcast</strong> (<em>float</em>) – backcast value</p></li>
+<li><p><strong>var_bounds</strong> (<em>np.ndarray</em>) – variance bounds</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conditional variance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.forecast_variance">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forecast_variance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.Parameters" title="frds.algorithms._garch.GJRGARCHModel.Parameters"><span class="pre">Parameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_variance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_garch/#GJRGARCHModel.forecast_variance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.forecast_variance" title="Link to this definition">¶</a></dt>
+<dd><p>Forecast the variances conditional on given parameters and residuals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<a class="reference internal" href="#frds.algorithms.GJRGARCHModel.Parameters" title="frds.algorithms.GJRGARCHModel.Parameters"><em>Parameters</em></a>) – <a class="reference internal" href="#frds.algorithms.GJRGARCHModel.Parameters" title="frds.algorithms.GJRGARCHModel.Parameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel.Parameters</span></code></a></p></li>
+<li><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals to use</p></li>
+<li><p><strong>initial_variance</strong> (<em>float</em>) – starting value of variance forecasts</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conditional variance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.starting_values">
+<span class="sig-name descname"><span class="pre">starting_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_garch/#GJRGARCHModel.starting_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.starting_values" title="Link to this definition">¶</a></dt>
+<dd><p>Finds the optimal initial values for the volatility model via a grid
+search. For varying target persistence and alpha values, return the
+combination of alpha and beta that gives the highest loglikelihood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals from the mean model</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[omega, alpha, gamma, beta]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>returns</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(T,)</span></code> array of <code class="docutils literal notranslate"><span class="pre">T</span></code> returns</p></li>
+<li><p><strong>zero_mean</strong> (<em>bool</em>) – whether to use a zero mean returns model. Default to False.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">returns</span></code> is best to be percentage returns for optimization</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.backcast">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.backcast" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the starting value for estimating conditional variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>initial value from backcasting</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.bounds_check">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.bounds_check" title="Link to this definition">¶</a></dt>
+<dd><p>Adjust the conditional variance at time t based on its bounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma2</strong> (<em>float</em>) – conditional variance</p></li>
+<li><p><strong>var_bounds</strong> (<em>np.ndarray</em>) – lower and upper bounds</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>adjusted conditional variance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.ewma">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ewma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.94</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.ewma" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the conditional variance estimates using
+Exponentially Weighted Moving Average (EWMA).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resids</strong> (<em>np.ndarray</em>) – Residuals from the model.</p></li>
+<li><p><strong>initial_value</strong> (<em>float</em>) – Initial value for the conditional variance.</p></li>
+<li><p><strong>lam</strong> (<em>float</em>) – Decay factor for the EWMA.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing the conditional variance estimates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.loglikelihood">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loglikelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.loglikelihood" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the log-likelihood assuming residuals are
+normally distributed conditional on the variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals to use in computing log-likelihood.</p></li>
+<li><p><strong>sigma2</strong> (<em>np.ndarray</em>) – conditional variance of residuals.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>log-likelihood</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.loglikelihood_model">
+<span class="sig-name descname"><span class="pre">loglikelihood_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backcast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.loglikelihood_model" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the negative log-likelihood based on the current <code class="docutils literal notranslate"><span class="pre">params</span></code>.
+This function is used in optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>np.ndarray</em>) – [mu, omega, alpha, (gamma), beta]</p></li>
+<li><p><strong>backcast</strong> (<em>float</em>) – backcast value</p></li>
+<li><p><strong>var_bounds</strong> (<em>np.ndarray</em>) – variance bounds</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>negative log-likelihood</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.preparation">
+<span class="sig-name descname"><span class="pre">preparation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.preparation" title="Link to this definition">¶</a></dt>
+<dd><p>Prepare starting values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of starting values</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.variance_bounds">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variance_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.variance_bounds" title="Link to this definition">¶</a></dt>
+<dd><p>Compute bounds for conditional variances using EWMA.</p>
+<p>This function calculates the lower and upper bounds for conditional variances
+based on the residuals provided. The bounds are computed to ensure numerical
+stability during the parameter estimation process of GARCH models. The function
+uses Exponentially Weighted Moving Average (EWMA) to estimate the initial variance
+and then adjusts these estimates to lie within global bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resids</strong> (<em>np.ndarray</em>) – residuals from the mean model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array where each row contains the lower and upper bounds for the conditional variance at each time point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.algorithms.GJRGARCHModel.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.algorithms.GJRGARCHModel.</span></span><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frds.algorithms.GJRGARCHModel.Parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Let’s import the dataset.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.stata-press.com/data/r18/stocks.dta&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="n">data_url</span><span class="p">,</span> <span class="n">convert_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Scale returns to percentage returns for better optimization results</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">returns</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;nissan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<p>Use <a class="reference internal" href="#frds.algorithms.GJRGARCHModel" title="frds.algorithms.GJRGARCHModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel</span></code></a> to estimate a GJR-GARCH(1,1).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GJRGARCHModel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">GJRGARCHModel</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="go">Parameters(mu=0.010528449295629098,</span>
+<span class="go">           omega=0.05512898468355955,</span>
+<span class="go">           alpha=0.07700974411970742,</span>
+<span class="go">           gamma=0.021814015760057957,</span>
+<span class="go">           beta=0.9013499076166999,</span>
+<span class="go">           loglikelihood=-4085.741514140086)</span>
+</pre></div>
+</div>
+<p>These estimates are identical to the ones produced by <a class="reference external" href="https://pypi.org/project/arch/">arch</a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arch</span><span class="w"> </span><span class="kn">import</span> <span class="n">arch_model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">arch_model</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="s1">&#39;Constant&#39;</span><span class="p">,</span> <span class="n">vol</span><span class="o">=</span><span class="s1">&#39;GARCH&#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">                   Constant Mean - GJR-GARCH Model Results</span>
+<span class="go">==============================================================================</span>
+<span class="go">Dep. Variable:                      y   R-squared:                       0.000</span>
+<span class="go">Mean Model:             Constant Mean   Adj. R-squared:                  0.000</span>
+<span class="go">Vol Model:                  GJR-GARCH   Log-Likelihood:               -4085.74</span>
+<span class="go">Distribution:                  Normal   AIC:                           8181.48</span>
+<span class="go">Method:            Maximum Likelihood   BIC:                           8209.52</span>
+<span class="go">                                        No. Observations:                 2015</span>
+<span class="go">Date:                Fri, Sep 29 2023   Df Residuals:                     2014</span>
+<span class="go">Time:                        09:59:37   Df Model:                            1</span>
+<span class="go">                                  Mean Model</span>
+<span class="go">=============================================================================</span>
+<span class="go">                 coef    std err          t      P&gt;|t|       95.0% Conf. Int.</span>
+<span class="go">-----------------------------------------------------------------------------</span>
+<span class="go">mu             0.0105  3.632e-02      0.290      0.772 [-6.066e-02,8.171e-02]</span>
+<span class="go">                               Volatility Model</span>
+<span class="go">=============================================================================</span>
+<span class="go">                 coef    std err          t      P&gt;|t|       95.0% Conf. Int.</span>
+<span class="go">-----------------------------------------------------------------------------</span>
+<span class="go">omega          0.0551  2.901e-02      1.900  5.743e-02   [-1.740e-03,  0.112]</span>
+<span class="go">alpha[1]       0.0770  3.428e-02      2.247  2.467e-02    [9.821e-03,  0.144]</span>
+<span class="go">gamma[1]       0.0218  2.214e-02      0.985      0.324 [-2.158e-02,6.522e-02]</span>
+<span class="go">beta[1]        0.9014  3.159e-02     28.532 4.682e-179      [  0.839,  0.963]</span>
+<span class="go">=============================================================================</span>
+</pre></div>
+</div>
+<p>Additionaly, in Stata, we can estimate the same model as below:</p>
+<div class="highlight-stata notranslate"><div class="highlight"><pre><span></span><span class="k">webuse</span> stocks,<span class="k"> clear</span>
+<span class="k">replace</span> nissan = nissan <span class="o">*</span> <span class="m">100</span>
+<span class="k">arch</span> nissan,<span class="k"> arch</span>(<span class="m">1</span>) tarch(<span class="m">1</span>) garch(<span class="m">1</span>)<span class="k"> vce</span>(robust)
+</pre></div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">Important! <span class="math notranslate nohighlight">\(\gamma\)</span> in Stata</p>
+<p>In Stata, the estimate of <span class="math notranslate nohighlight">\(\gamma\)</span> is the negative of the ones obtained
+in <code class="docutils literal notranslate"><span class="pre">arch</span></code> and <a class="reference internal" href="#frds.algorithms.GJRGARCHModel" title="frds.algorithms.GJRGARCHModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel</span></code></a>!</p>
+<p>This is because in Stata, GJR-GARCH is specified via the <code class="docutils literal notranslate"><span class="pre">tarch</span></code> option, or
+threshold ARCH. It defines the indicator <span class="math notranslate nohighlight">\(I_{t-1}\)</span> in equation <a class="reference internal" href="#equation-volatility-eq">(3)</a> the opposite way, <span class="math notranslate nohighlight">\(I_{t-1} = 1\)</span> if <span class="math notranslate nohighlight">\(\epsilon_{t-1} &gt; 0\)</span> and 0 otherwise.</p>
+</div>
+<p>It would produce very similar estimates. The discrepencies are likly due to the
+different optimization algorithms used. Based on loglikelihood, the estimates
+from <code class="docutils literal notranslate"><span class="pre">arch</span></code> and <a class="reference internal" href="#frds.algorithms.GJRGARCHModel" title="frds.algorithms.GJRGARCHModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel</span></code></a> are marginally better.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<p>I did many tests, and in 99% cases <a class="reference internal" href="#frds.algorithms.GJRGARCHModel" title="frds.algorithms.GJRGARCHModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GJRGARCHModel</span></code></a> performs
+equally well with <code class="docutils literal notranslate"><span class="pre">arch</span></code>, simply because it’s adapted from <code class="docutils literal notranslate"><span class="pre">arch</span></code>.
+In some rare cases when the return series does not behave well, though,
+the two would produce very different estimates despite having almost identical log-likelihood.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../gjr-garch-dcc/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">GJR-GARCH(1,1) - DCC</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../garch-dcc/">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">GARCH(1,1) - DCC</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 - 2024, Mingze Gao
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mgao6767/frds" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">GJR-GARCH(1,1)</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#return-equation">Return equation</a></li>
+<li><a class="reference internal" href="#shock-equation">Shock equation</a></li>
+<li><a class="reference internal" href="#volatility-equation">Volatility equation</a></li>
+<li><a class="reference internal" href="#log-likelihood-function">Log-likelihood function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#estimation-techniques">Estimation techniques</a><ul>
+<li><a class="reference internal" href="#initial-value-of-conditional-variance">Initial value of conditional variance</a></li>
+<li><a class="reference internal" href="#initial-value-of-omega">Initial value of <span class="math notranslate nohighlight">\(\omega\)</span></a></li>
+<li><a class="reference internal" href="#initial-value-of-alpha-gamma-and-beta">Initial value of <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\gamma\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span></a></li>
+<li><a class="reference internal" href="#variance-bounds">Variance bounds</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel"><code class="docutils literal notranslate"><span class="pre">GJRGARCHModel</span></code></a><ul>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.fit"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.compute_variance"><code class="docutils literal notranslate"><span class="pre">compute_variance()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.forecast_variance"><code class="docutils literal notranslate"><span class="pre">forecast_variance()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.starting_values"><code class="docutils literal notranslate"><span class="pre">starting_values()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.__init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.backcast"><code class="docutils literal notranslate"><span class="pre">backcast()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.bounds_check"><code class="docutils literal notranslate"><span class="pre">bounds_check()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.ewma"><code class="docutils literal notranslate"><span class="pre">ewma()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.loglikelihood"><code class="docutils literal notranslate"><span class="pre">loglikelihood()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.loglikelihood_model"><code class="docutils literal notranslate"><span class="pre">loglikelihood_model()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.preparation"><code class="docutils literal notranslate"><span class="pre">preparation()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.variance_bounds"><code class="docutils literal notranslate"><span class="pre">variance_bounds()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frds.algorithms.GJRGARCHModel.Parameters"><code class="docutils literal notranslate"><span class="pre">Parameters</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=187304be"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=35a8b989"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

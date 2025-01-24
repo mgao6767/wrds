@@ -1,0 +1,757 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Long-Run Marginal Expected Shortfall (LRMES)" href="../long_run_mes/" /><link rel="prev" title="Lerner Index (Banks)" href="../lerner_index/" />
+        <link rel="canonical" href="https://frds.io/measures/limit_order_book_slope/" />
+
+    <link rel="shortcut icon" href="../../_static/frds.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Limit Order Book Slope - frds</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=415d3439" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">frds</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/frds_icon.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">frds</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Supported Measures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Supported Measures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../absorption_ratio/">Absorption Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contingent_claim_analysis/">Contingent Claim Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distress_insurance_premium/">Distress Insurance Premium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kyle_lambda/">Kyle’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lerner_index/">Lerner Index (Banks)</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Limit Order Book Slope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../long_run_mes/">Long-Run Marginal Expected Shortfall (LRMES)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../marginal_expected_shortfall/">Marginal Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../option_prices/">Option Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../probability_of_informed_trading/">Probability of Informed Trading (PIN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spread_and_price_impact/">Spread and Price Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../srisk/">SRISK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../systemic_expected_shortfall/">Systemic Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../z_score/">Z-score</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../algorithms/">Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch/">GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-ccc/">GARCH(1,1) - CCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-dcc/">GARCH(1,1) - DCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch/">GJR-GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch-dcc/">GJR-GARCH(1,1) - DCC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../datasets/">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/stock-returns/">Stock Returns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/mgao6767/frds/">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mingze-gao.com">Mingze Gao</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/measures/limit_order_book_slope.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="limit-order-book-slope">
+<h1>Limit Order Book Slope<a class="headerlink" href="#limit-order-book-slope" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>Some various slope measures of the limit order book (LOB). A steeply
+sloping order book indicates a lack of depth beyond the best bid or ask
+quote, a sign of illiquidity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The notations below largely follow the respective papers. Therefore,
+the same symbol may have different meanings.</p>
+<p>Certain measures are estimated by (typically hourly) snapshots or
+intervals, where quantities supplied at each level are aggregated. If
+so, the functions here should be applied on data by intervals.</p>
+</div>
+<section id="naes-and-skjeltorp-2006">
+<h3>Næs and Skjeltorp (2006)<a class="headerlink" href="#naes-and-skjeltorp-2006" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://doi.org/10.1016/j.finmar.2006.04.001">Næs and Skjeltorp (2006)</a> introduce the
+slope measure of bid, ask and the LOB. They measure the slope at each
+price level by the ratio of the increase in depth over the increase in
+price, then average across all price levels.</p>
+<div class="math-wrapper docutils container" id="equation-bid-slope-naesskjeltorp2006">
+<div class="math notranslate nohighlight" id="equation-bid-slope-naesskjeltorp2006">
+<span class="eqno">(1)<a class="headerlink" href="#equation-bid-slope-naesskjeltorp2006" title="Link to this equation">¶</a></span>\[\text{Bid Slope}_{it} = \frac{1}{N^B} \left\{\frac{v^B_1}{|p^B_1/p_0 -1|} + \sum_{\tau=1}^{N^B-1} \frac{v^B_{\tau+1}/v^B_{\tau}-1}{|p^B_{\tau+1}/p^B_{\tau}-1|} \right\}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-ask-slope-naesskjeltorp2006">
+<div class="math notranslate nohighlight" id="equation-ask-slope-naesskjeltorp2006">
+<span class="eqno">(2)<a class="headerlink" href="#equation-ask-slope-naesskjeltorp2006" title="Link to this equation">¶</a></span>\[\text{Ask Slope}_{it} = \frac{1}{N^A} \left\{\frac{v^A_1}{p^A_1/p_0 -1} + \sum_{\tau=1}^{N^A-1} \frac{v^A_{\tau+1}/v^A_{\tau}-1}{p^A_{\tau+1}/p^A_{\tau}-1} \right\}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(N^B\)</span> and <span class="math notranslate nohighlight">\(N^A\)</span> are the total number of bid and ask
+prices (tick levels) of stock <span class="math notranslate nohighlight">\(i\)</span> (e.g., if we examine 5 levels of
+LOB, <span class="math notranslate nohighlight">\(N^B\)</span> and <span class="math notranslate nohighlight">\(N^A\)</span> will be 5) and <span class="math notranslate nohighlight">\(\tau\)</span> is the tick
+level. The best bid (ask) price is denoted by <span class="math notranslate nohighlight">\(p_1^B\)</span>
+(<span class="math notranslate nohighlight">\(p_1^A\)</span>), i.e. <span class="math notranslate nohighlight">\(\tau=1\)</span>. <span class="math notranslate nohighlight">\(p_0\)</span> is the bid-ask
+midpoint. <span class="math notranslate nohighlight">\(v_{\tau}^B\)</span> and <span class="math notranslate nohighlight">\(v_{\tau}^A\)</span> denote the natural
+logarithms of the <em>accumulated</em> volume at each tick level <span class="math notranslate nohighlight">\(\tau\)</span>
+on the bid and ask sides.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If we define <span class="math notranslate nohighlight">\(V^B_\tau\)</span> as the total volume demanded at
+<span class="math notranslate nohighlight">\(p^B_\tau\)</span>, then <span class="math notranslate nohighlight">\(v_{\tau}^B = \ln \left(\sum_{j=1}^\tau
+V_j^B\right)\)</span>.</p>
+</div>
+<p>The LOB slope for stock <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> is then computed as</p>
+<div class="math-wrapper docutils container" id="equation-lob-slope-naesskjeltorp2006">
+<div class="math notranslate nohighlight" id="equation-lob-slope-naesskjeltorp2006">
+<span class="eqno">(3)<a class="headerlink" href="#equation-lob-slope-naesskjeltorp2006" title="Link to this equation">¶</a></span>\[\text{LOB Slope}_{it} = \frac{\text{Bid Slope}_{it} + \text{Ask Slope}_{it}}{2}\]</div>
+</div>
+<p>Intuitively, the bid (ask) slope measures the percentage change in the
+bid (ask) volume relative to the percentage change in the corresponding
+bid (ask) price, which is averaged across all limit price levels in the
+bid (ask) order book, and the LOB slope is an equally weighted average
+of the bid and ask slopes.</p>
+</section>
+<section id="ghysels-and-nguyen-2019">
+<h3>Ghysels and Nguyen (2019)<a class="headerlink" href="#ghysels-and-nguyen-2019" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://doi.org/10.3390/jrfm12040164">Ghysels and Nguyen (2019)</a> take a
+more direct approach. The slope is estimated from regressing the
+percentage of cumulative depth on the price distance at each level.</p>
+<div class="math-wrapper docutils container" id="equation-ghyselsnguyen2019">
+<div class="math notranslate nohighlight" id="equation-ghyselsnguyen2019">
+<span class="eqno">(4)<a class="headerlink" href="#equation-ghyselsnguyen2019" title="Link to this equation">¶</a></span>\[QP_{it\tau} = \alpha_i + \beta_i \times |P_{it\tau} - m_{it}|  + \varepsilon_{it\tau}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(QP_{it\tau}\)</span> is the percentage of cumulative depth at level
+<span class="math notranslate nohighlight">\(\tau\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(|P_{i\tau} - m_{it}|\)</span> is the
+distance between the price at level <span class="math notranslate nohighlight">\(\tau\)</span> and the best bid-ask
+midpoint. <span class="math notranslate nohighlight">\(\beta_i\)</span> is the estimated slope. The bid and ask slope
+are estimated separately.</p>
+<p>Because the cumulative depths are standardized by the total depth across
+all <span class="math notranslate nohighlight">\(K\)</span> levels, <span class="math notranslate nohighlight">\(QP_{itK}\)</span> is always 100%. As such, the
+slope measure <span class="math notranslate nohighlight">\(\beta\)</span> depends only on how wide the <span class="math notranslate nohighlight">\(K\)</span>-level
+pricing grid is (the intercept <span class="math notranslate nohighlight">\(\alpha\)</span> takes care of
+<span class="math notranslate nohighlight">\(QP_{it1}\)</span>). Accordingly, this slope measure captures the
+tightness of prices in the book. A steeper slope indicates that limit
+orders are priced closer to the market. Another way of interpreting the
+slope is that it measures the elasticity of depth with respect to price.
+A steeper slope implies that for one unit increase in price, there is a
+greater increase in the quantity bid or offered, implying a greater
+willingness of liquidity providers to facilitate trading demand on each
+side of the market.</p>
+</section>
+<section id="hasbrouck-and-seppi-2001">
+<h3>Hasbrouck and Seppi (2001)<a class="headerlink" href="#hasbrouck-and-seppi-2001" title="Link to this heading">¶</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(B_k\)</span> and <span class="math notranslate nohighlight">\(A_k\)</span> denote the per share bid and ask for
+quote record <span class="math notranslate nohighlight">\(k\)</span>, and let <span class="math notranslate nohighlight">\(N_k^B\)</span> and <span class="math notranslate nohighlight">\(N_k^A\)</span> denote
+the respective number of shares posted at these quotes. Thus, a
+prospective purchaser knows that, if hers is the first market buy order
+to arrive, she can buy at least <span class="math notranslate nohighlight">\(N_k^A\)</span> shares at the ask price
+<span class="math notranslate nohighlight">\(A_k\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These slope measures below are for the whole LOB, not specific to bid
+or ask.</p>
+</div>
+<section id="quote-slope">
+<h4>Quote Slope<a class="headerlink" href="#quote-slope" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container" id="equation-quote-slope-hs2001">
+<div class="math notranslate nohighlight" id="equation-quote-slope-hs2001">
+<span class="eqno">(5)<a class="headerlink" href="#equation-quote-slope-hs2001" title="Link to this equation">¶</a></span>\[\text{Quote Slope}_k = \frac{A_k - B_k}{\log N^A_k + \log N^B_k}\]</div>
+</div>
+</section>
+<section id="log-quote-slope">
+<h4>Log Quote Slope<a class="headerlink" href="#log-quote-slope" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container" id="equation-log-quote-slope-hs2001">
+<div class="math notranslate nohighlight" id="equation-log-quote-slope-hs2001">
+<span class="eqno">(6)<a class="headerlink" href="#equation-log-quote-slope-hs2001" title="Link to this equation">¶</a></span>\[\text{Log Quote Slope}_k = \frac{\log (A_k / B_k)}{\log N^A_k + \log N^B_k}\]</div>
+</div>
+</section>
+</section>
+<section id="della-vedova-gao-grant-and-westerholm-working-paper">
+<h3>Della Vedova, Gao, Grant and Westerholm (working paper)<a class="headerlink" href="#della-vedova-gao-grant-and-westerholm-working-paper" title="Link to this heading">¶</a></h3>
+<p>Slope is measured by the cumulative volume at level <span class="math notranslate nohighlight">\(K\)</span> divided by
+the distance from the <span class="math notranslate nohighlight">\(K\)</span>-th level price to the bid-ask midpoint.</p>
+<div class="math-wrapper docutils container" id="equation-bid-slope-dggw">
+<div class="math notranslate nohighlight" id="equation-bid-slope-dggw">
+<span class="eqno">(7)<a class="headerlink" href="#equation-bid-slope-dggw" title="Link to this equation">¶</a></span>\[\text{Bid Slope}_{it} = \frac{\sum_{x=1}^K \text{Bid Depth}_{itx}}{|\text{Bid Price}^K_{it} - m_{it}|}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-ask-slope-dggw">
+<div class="math notranslate nohighlight" id="equation-ask-slope-dggw">
+<span class="eqno">(8)<a class="headerlink" href="#equation-ask-slope-dggw" title="Link to this equation">¶</a></span>\[\text{Ask Slope}_{it} = \frac{\sum_{x=1}^K \text{Ask Depth}_{itx}}{\text{Ask Price}^K_{it} - m_{it}}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\text{Depth}_{itx}\)</span> is the sum of the quantity of available
+at bid/ask depth level <span class="math notranslate nohighlight">\(x\)</span> in stock <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span>,
+<span class="math notranslate nohighlight">\(\text{Price}_{it}^K\)</span> is the bid/ask price at the <span class="math notranslate nohighlight">\(K\)</span>-th
+level, and <span class="math notranslate nohighlight">\(m_{it}\)</span> is the bid-ask midpoint at time <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<section id="bid-side-slope-difference">
+<h4>Bid-side Slope Difference<a class="headerlink" href="#bid-side-slope-difference" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container" id="equation-bid-slope-diff-dggw">
+<div class="math notranslate nohighlight" id="equation-bid-slope-diff-dggw">
+<span class="eqno">(9)<a class="headerlink" href="#equation-bid-slope-diff-dggw" title="Link to this equation">¶</a></span>\[\text{Bid Slope Difference}_{it} = \frac{\text{Bid Depth}_{it5} - \text{Bid Depth}_{it3}}{|\text{Bid Price}_{it5} - \text{Bid Price}_{it3}|} - \frac{\text{Bid Depth}_{it3} - \text{Bid Depth}_{it1}}{|\text{Bid Price}_{it3} - \text{Bid Price}_{it1}|}\]</div>
+</div>
+</section>
+<section id="ask-side-slope-difference">
+<h4>Ask-side Slope Difference<a class="headerlink" href="#ask-side-slope-difference" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container" id="equation-ask-slope-diff-dggw">
+<div class="math notranslate nohighlight" id="equation-ask-slope-diff-dggw">
+<span class="eqno">(10)<a class="headerlink" href="#equation-ask-slope-diff-dggw" title="Link to this equation">¶</a></span>\[\text{Ask Slope Difference}_{it} = \frac{\text{Ask Depth}_{it5} - \text{Ask Depth}_{it3}}{|\text{Ask Price}_{it5} - \text{Ask Price}_{it3}|} - \frac{\text{Ask Depth}_{it3} - \text{Ask Depth}_{it1}}{|\text{Ask Price}_{it3} - \text{Ask Price}_{it1}|}\]</div>
+</div>
+</section>
+<section id="scaled-depth-difference">
+<h4>Scaled Depth Difference<a class="headerlink" href="#scaled-depth-difference" title="Link to this heading">¶</a></h4>
+<p>In addition, the relative asymmetry of depth is also informative about
+the relative demand and supply of the stock. Scaled Depth Difference
+(SDD) is constructed to capture the relative asymmetry in the LOB at a
+particular time up to a particular level <span class="math notranslate nohighlight">\(K\)</span> (e.g., 5).</p>
+<div class="math-wrapper docutils container" id="equation-scaled-depth-difference">
+<div class="math notranslate nohighlight" id="equation-scaled-depth-difference">
+<span class="eqno">(11)<a class="headerlink" href="#equation-scaled-depth-difference" title="Link to this equation">¶</a></span>\[\text{SDD}_{i,t} = 2\times \frac{\sum_{x=1}^K \text{Ask Depth}_{i,t,x}-\sum_{x=1}^K \text{Bid Depth}_{i,t,x}}{\sum_{x=1}^K \text{Ask Depth}_{i,t,x}+\sum_{x=1}^K \text{Bid Depth}_{i,t,x}}\]</div>
+</div>
+<p>SDD is essentially the depth difference scaled by the average depth. A
+value of SDD greater than zero indicates asymmetry in the direction of
+the ask side of the book.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>(TODO) Implementation of all other slope measures.</p>
+</div>
+</section>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1016/j.finmar.2006.04.001">Næs and Skjeltorp (2006)</a>, Order Book
+Characteristics and the Volume–Volatility Relation: Empirical
+Evidence from a Limit Order Market, <em>Journal of Financial Markets</em>
+9(4), 408–32.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1016/j.finmar.2015.03.001">Valenzuela, Zer, Fryzlewicz and Rheinländer (2015)</a>, Relative liquidity
+and future volatility, <em>Journal of Financial Markets</em>, 24, 25–48.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.3390/jrfm12040164">Ghysels and Nguyen (2019)</a>,
+Price discovery of a speculative asset: Evidence from a bitcoin
+exchange, <em>Journal of Risk and Financial Management</em>, 12(4), 164.</p></li>
+<li><p><a class="reference external" href="http://dx.doi.org/10.2139/ssrn.1009549">Duong and Kalev (2007)</a>,
+Order Book Slope and Price Volatility, <em>SSRN</em>.</p></li>
+</ul>
+</section>
+<section id="module-frds.measures.lob_slope">
+<span id="api"></span><h3>API<a class="headerlink" href="#module-frds.measures.lob_slope" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.NS2006_bid_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">NS2006_bid_slope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#NS2006_bid_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.NS2006_bid_slope" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.NS2006_ask_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">NS2006_ask_slope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#NS2006_ask_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.NS2006_ask_slope" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.GN2019_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">GN2019_slope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#GN2019_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.GN2019_slope" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.HS2001_quote_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">HS2001_quote_slope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#HS2001_quote_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.HS2001_quote_slope" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.HS2001_log_quote_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">HS2001_log_quote_slope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#HS2001_log_quote_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.HS2001_log_quote_slope" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.DGGW_ask_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">DGGW_ask_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ask_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ask_price_highest_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#DGGW_ask_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.DGGW_ask_slope" title="Link to this definition">¶</a></dt>
+<dd><p>Ask Slope from Della Vedova, Gao, Grant and Westerholm (working paper)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ask_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB ask sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+<li><p><strong>ask_price_highest_level</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,)</span></code> array of ask prices at the highest level <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>mid_point</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,)</span></code> array of bid-ask midpoints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ask slope</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures.lob_slope</span><span class="w"> </span><span class="kn">import</span> <span class="n">DGGW_ask_slope</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mid_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Assume bid-ask midpoint stays at 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv1</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 1 ask sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv2</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 2 ask sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv3</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv4</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv5</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ask_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">,</span> <span class="n">lv3</span><span class="p">,</span> <span class="n">lv4</span><span class="p">,</span> <span class="n">lv5</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ask_size</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1000, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ask_price_highest_level</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated ask price at level 5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DGGW_ask_slope</span><span class="p">(</span><span class="n">ask_size</span><span class="p">,</span> <span class="n">ask_price_highest_level</span><span class="p">,</span> <span class="n">mid_point</span><span class="p">)</span>
+<span class="go">1136.8718207500128</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.DGGW_bid_slope">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">DGGW_bid_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bid_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bid_price_highest_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#DGGW_bid_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.DGGW_bid_slope" title="Link to this definition">¶</a></dt>
+<dd><p>Bid Slope from Della Vedova, Gao, Grant and Westerholm (working paper)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bid_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB bid sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+<li><p><strong>bid_price_highest_level</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,)</span></code> array of bid prices at the highest level <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>mid_point</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,)</span></code> array of bid-ask midpoints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bid slope</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures.lob_slope</span><span class="w"> </span><span class="kn">import</span> <span class="n">DGGW_bid_slope</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mid_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Assume bid-ask midpoint stays at 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv1</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 1 bid sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv2</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 2 bid sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv3</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv4</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv5</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bid_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">,</span> <span class="n">lv3</span><span class="p">,</span> <span class="n">lv4</span><span class="p">,</span> <span class="n">lv5</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bid_size</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1000, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bid_price_highest_level</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">.7</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">.99</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated bid price at level 5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DGGW_bid_slope</span><span class="p">(</span><span class="n">bid_size</span><span class="p">,</span> <span class="n">bid_price_highest_level</span><span class="p">,</span> <span class="n">mid_point</span><span class="p">)</span>
+<span class="go">5316.539811566988</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.DGGW_bid_side_slope_difference">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">DGGW_bid_side_slope_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bid_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bid_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#DGGW_bid_side_slope_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.DGGW_bid_side_slope_difference" title="Link to this definition">¶</a></dt>
+<dd><p>Bid-side Slope Difference from Della Vedova, Gao, Grant and Westerholm (working paper)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bid_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB bid sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+<li><p><strong>bid_price</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB bid prices, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bid-side slope difference</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.DGGW_ask_side_slope_difference">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">DGGW_ask_side_slope_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ask_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ask_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#DGGW_ask_side_slope_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.DGGW_ask_side_slope_difference" title="Link to this definition">¶</a></dt>
+<dd><p>Ask-side Slope Difference from Della Vedova, Gao, Grant and Westerholm (working paper)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ask_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB ask sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+<li><p><strong>ask_price</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB ask prices, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ask-side slope difference</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="frds.measures.lob_slope.DGGW_scaled_depth_difference">
+<span class="sig-prename descclassname"><span class="pre">frds.measures.lob_slope.</span></span><span class="sig-name descname"><span class="pre">DGGW_scaled_depth_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bid_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ask_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/lob_slope/#DGGW_scaled_depth_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.lob_slope.DGGW_scaled_depth_difference" title="Link to this definition">¶</a></dt>
+<dd><p>SDD from Della Vedova, Gao, Grant and Westerholm (working paper)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bid_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB bid sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+<li><p><strong>ask_size</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(n,k)</span></code> array of LOB ask sizes, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is number of quotes and <code class="docutils literal notranslate"><span class="pre">k</span></code> is number of levels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scaled depth difference (simple weighted over <code class="docutils literal notranslate"><span class="pre">n</span></code> quotes)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures.lob_slope</span><span class="w"> </span><span class="kn">import</span> <span class="n">DGGW_scaled_depth_difference</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv1</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 1 bid sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv2</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 2 bid sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv3</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv4</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv5</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bid_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">,</span> <span class="n">lv3</span><span class="p">,</span> <span class="n">lv4</span><span class="p">,</span> <span class="n">lv5</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv1</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 1 ask sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv2</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span> <span class="c1"># Simulated level 2 ask sizes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv3</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv4</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lv5</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ask_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">,</span> <span class="n">lv3</span><span class="p">,</span> <span class="n">lv4</span><span class="p">,</span> <span class="n">lv5</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DGGW_scaled_depth_difference</span><span class="p">(</span><span class="n">bid_size</span><span class="p">,</span> <span class="n">ask_size</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.2697934067000831</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../long_run_mes/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Long-Run Marginal Expected Shortfall (LRMES)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../lerner_index/">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Lerner Index (Banks)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 - 2024, Mingze Gao
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mgao6767/frds" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Limit Order Book Slope</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#naes-and-skjeltorp-2006">Næs and Skjeltorp (2006)</a></li>
+<li><a class="reference internal" href="#ghysels-and-nguyen-2019">Ghysels and Nguyen (2019)</a></li>
+<li><a class="reference internal" href="#hasbrouck-and-seppi-2001">Hasbrouck and Seppi (2001)</a><ul>
+<li><a class="reference internal" href="#quote-slope">Quote Slope</a></li>
+<li><a class="reference internal" href="#log-quote-slope">Log Quote Slope</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#della-vedova-gao-grant-and-westerholm-working-paper">Della Vedova, Gao, Grant and Westerholm (working paper)</a><ul>
+<li><a class="reference internal" href="#bid-side-slope-difference">Bid-side Slope Difference</a></li>
+<li><a class="reference internal" href="#ask-side-slope-difference">Ask-side Slope Difference</a></li>
+<li><a class="reference internal" href="#scaled-depth-difference">Scaled Depth Difference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#module-frds.measures.lob_slope">API</a><ul>
+<li><a class="reference internal" href="#frds.measures.lob_slope.NS2006_bid_slope"><code class="docutils literal notranslate"><span class="pre">NS2006_bid_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.NS2006_ask_slope"><code class="docutils literal notranslate"><span class="pre">NS2006_ask_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.GN2019_slope"><code class="docutils literal notranslate"><span class="pre">GN2019_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.HS2001_quote_slope"><code class="docutils literal notranslate"><span class="pre">HS2001_quote_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.HS2001_log_quote_slope"><code class="docutils literal notranslate"><span class="pre">HS2001_log_quote_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.DGGW_ask_slope"><code class="docutils literal notranslate"><span class="pre">DGGW_ask_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.DGGW_bid_slope"><code class="docutils literal notranslate"><span class="pre">DGGW_bid_slope()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.DGGW_bid_side_slope_difference"><code class="docutils literal notranslate"><span class="pre">DGGW_bid_side_slope_difference()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.DGGW_ask_side_slope_difference"><code class="docutils literal notranslate"><span class="pre">DGGW_ask_side_slope_difference()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.lob_slope.DGGW_scaled_depth_difference"><code class="docutils literal notranslate"><span class="pre">DGGW_scaled_depth_difference()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=187304be"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=35a8b989"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

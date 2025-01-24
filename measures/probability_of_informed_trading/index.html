@@ -1,0 +1,837 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Spread and Price Impact" href="../spread_and_price_impact/" /><link rel="prev" title="Option Prices" href="../option_prices/" />
+        <link rel="canonical" href="https://frds.io/measures/probability_of_informed_trading/" />
+
+    <link rel="shortcut icon" href="../../_static/frds.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Probability of Informed Trading (PIN) - frds</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=415d3439" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">frds</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/frds_icon.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">frds</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Supported Measures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Supported Measures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../absorption_ratio/">Absorption Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contingent_claim_analysis/">Contingent Claim Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distress_insurance_premium/">Distress Insurance Premium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kyle_lambda/">Kyle’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lerner_index/">Lerner Index (Banks)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../limit_order_book_slope/">Limit Order Book Slope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../long_run_mes/">Long-Run Marginal Expected Shortfall (LRMES)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../marginal_expected_shortfall/">Marginal Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../option_prices/">Option Prices</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Probability of Informed Trading (PIN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spread_and_price_impact/">Spread and Price Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../srisk/">SRISK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../systemic_expected_shortfall/">Systemic Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../z_score/">Z-score</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../algorithms/">Algorithms</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch/">GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-ccc/">GARCH(1,1) - CCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/garch-dcc/">GARCH(1,1) - DCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch/">GJR-GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../algorithms/gjr-garch-dcc/">GJR-GARCH(1,1) - DCC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../datasets/">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/stock-returns/">Stock Returns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/mgao6767/frds/">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mingze-gao.com">Mingze Gao</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/measures/probability_of_informed_trading.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="probability-of-informed-trading-pin">
+<h1>Probability of Informed Trading (PIN)<a class="headerlink" href="#probability-of-informed-trading-pin" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>In the market microstructure literature, Easley et. al. (1996) proposed
+a trading model that can decompose the bid-ask spread. This model
+introduces “Probability of Informed Trading”, or <strong>PIN</strong>, which serves
+as a means of measuring the informational component in the spread.</p>
+</section>
+<section id="original-easley-et-al-1996">
+<h2>Original Easley et. al. (1996)<a class="headerlink" href="#original-easley-et-al-1996" title="Link to this heading">¶</a></h2>
+<p>Assume that the buy and sell orders of informed and uninformed traders
+follow independent Poisson processes, and the following tree diagram
+describes the entire trading process:</p>
+<img alt="Theoretical model of PIN" class="align-center" src="../../_images/theoretical-model-of-pin.jpg" />
+<ul class="simple">
+<li><p>On each trading day, there is a probability of <span class="math notranslate nohighlight">\(P=\alpha\)</span> that
+new information will appear, and obviously a probability of
+<span class="math notranslate nohighlight">\(P=(1-\alpha)\)</span> that there will be no new information.</p></li>
+<li><p>The probability of new information being bearish is <span class="math notranslate nohighlight">\(P=\delta\)</span>,
+and the probability of it being bullish is <span class="math notranslate nohighlight">\(P=(1-\delta)\)</span>.</p>
+<ul>
+<li><p>If the news is bearish, the arrival rate of buy orders on that day
+is <span class="math notranslate nohighlight">\(\varepsilon\)</span>, and the arrival rate of sell orders is
+<span class="math notranslate nohighlight">\((\varepsilon+\mu)\)</span>.</p></li>
+<li><p>If the news is bullish, the arrival rate of buy orders on that day
+is <span class="math notranslate nohighlight">\((\varepsilon+\mu)\)</span>, and the arrival rate of sell orders
+is <span class="math notranslate nohighlight">\(\varepsilon\)</span>.</p></li>
+</ul>
+</li>
+<li><p>When there is no new information, the arrival rate of both buy and
+sell orders is <span class="math notranslate nohighlight">\(\varepsilon\)</span>.</p></li>
+</ul>
+<section id="trading-process">
+<h3>Trading Process<a class="headerlink" href="#trading-process" title="Link to this heading">¶</a></h3>
+<p>Next, assume that the market maker is a Bayesian, that is, he will
+update his understanding of the overall market status, especially
+whether there is new information on that day, by observing trades and
+trading rates. Suppose each trading day is independent,
+<span class="math notranslate nohighlight">\(P(t)=(P_n(t), P_b(t), P_g(t))\)</span> is the market maker’s prior
+probability perception, where <span class="math notranslate nohighlight">\(n\)</span> represents no new information,
+<span class="math notranslate nohighlight">\(b\)</span> represents bearish bad news, and <span class="math notranslate nohighlight">\(g\)</span> represents bullish
+good news, so <span class="math notranslate nohighlight">\(P(t)=(1-\alpha, \alpha\delta, \alpha(1-\delta))\)</span>.</p>
+<p>Let <span class="math notranslate nohighlight">\(S_t\)</span> be the event of a sell order arriving at time <span class="math notranslate nohighlight">\(t\)</span>,
+and <span class="math notranslate nohighlight">\(B_t\)</span> be the event of a buy order arriving at time <span class="math notranslate nohighlight">\(t\)</span>.
+Also, let <span class="math notranslate nohighlight">\(P(t|S_t)\)</span> be the updated probability perception of the
+market maker after observing a sell order arriving at time <span class="math notranslate nohighlight">\(t\)</span>
+based on the existing information. Then, according to Bayes’ theorem, if
+there is no new information at time <span class="math notranslate nohighlight">\(t\)</span> and the market maker
+observes a sell order, the posterior probability <span class="math notranslate nohighlight">\(P_n(t|S_t)\)</span>
+should be:</p>
+<div class="math-wrapper docutils container" id="equation-eq1">
+<div class="math notranslate nohighlight" id="equation-eq1">
+<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Link to this equation">¶</a></span>\[P_n(t|S_t) = \frac{P_n(t)\varepsilon}{\varepsilon+P_b(t)\mu}\]</div>
+</div>
+<p>Similarly, if there is bearish information and the market maker observes
+a sell order at time <span class="math notranslate nohighlight">\(t\)</span>, the posterior probability
+<span class="math notranslate nohighlight">\(P_b(t|S_t)\)</span> should be:</p>
+<div class="math-wrapper docutils container" id="equation-eq2">
+<div class="math notranslate nohighlight" id="equation-eq2">
+<span class="eqno">(2)<a class="headerlink" href="#equation-eq2" title="Link to this equation">¶</a></span>\[P_b(t|S_t) = \frac{P_b(t)(\varepsilon+\mu)}{\varepsilon+P_b(t)\mu}\]</div>
+</div>
+<p>If there is bullish information and the market maker observes a sell
+order at time <span class="math notranslate nohighlight">\(t\)</span>, the posterior probability <span class="math notranslate nohighlight">\(P_g(t|S_t)\)</span>
+should be:</p>
+<div class="math-wrapper docutils container" id="equation-eq3">
+<div class="math notranslate nohighlight" id="equation-eq3">
+<span class="eqno">(3)<a class="headerlink" href="#equation-eq3" title="Link to this equation">¶</a></span>\[P_g(t|S_t) = \frac{P_g(t)\varepsilon}{\varepsilon+P_b(t)\mu}\]</div>
+</div>
+<p>Thus, the expected zero-profit bid price at time <span class="math notranslate nohighlight">\(t\)</span> on day
+<span class="math notranslate nohighlight">\(i\)</span> should be the conditional expectation of the asset value based
+on historical information and observing a sell order at this time, that
+is,</p>
+<div class="math-wrapper docutils container" id="equation-eq4">
+<div class="math notranslate nohighlight" id="equation-eq4">
+<span class="eqno">(4)<a class="headerlink" href="#equation-eq4" title="Link to this equation">¶</a></span>\[b(t) = \frac{P_n(t)\varepsilon V^*_i+P_b(t)(\varepsilon+\mu)\underline{V}_i+P_g(t)\varepsilon\overline{V}_i}{\varepsilon+P_b(t)\mu}\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(V_i\)</span> is the value of the asset at the end of day <span class="math notranslate nohighlight">\(i\)</span>,
+and let the asset value be <span class="math notranslate nohighlight">\(\overline{V}_i\)</span> when there is positive
+news, <span class="math notranslate nohighlight">\(\underline{V}_i\)</span> when there is negative news, and
+<span class="math notranslate nohighlight">\(V^*_i\)</span> when there is no news, with <span class="math notranslate nohighlight">\(\underline{V}_i &lt; V^*_i
+&lt; \overline{V}_i\)</span>.</p>
+<p>At this point, the ask price should be:</p>
+<div class="math-wrapper docutils container" id="equation-eq5">
+<div class="math notranslate nohighlight" id="equation-eq5">
+<span class="eqno">(5)<a class="headerlink" href="#equation-eq5" title="Link to this equation">¶</a></span>\[a(t) = \frac{P_n(t)\varepsilon V^*_i+P_b(t)\varepsilon\underline{V}_i+P_g(t)(\varepsilon+\mu)\overline{V}_i}{\varepsilon+P_g(t)\mu}\]</div>
+</div>
+<p>Let’s associate these bid and ask prices with the expected asset value
+at time <span class="math notranslate nohighlight">\(t\)</span>. Considering that the conditional expectation of the
+asset value at this time is:</p>
+<div class="math-wrapper docutils container" id="equation-eq6">
+<div class="math notranslate nohighlight" id="equation-eq6">
+<span class="eqno">(6)<a class="headerlink" href="#equation-eq6" title="Link to this equation">¶</a></span>\[E[V_i|t] = P_n(t)V^*_i+P_b(t)\underline{V}_i+P_g(t)\overline{V}_i\]</div>
+</div>
+<p>we can write the above <span class="math notranslate nohighlight">\(b(t)\)</span> and <span class="math notranslate nohighlight">\(a(t)\)</span> as:</p>
+<div class="math-wrapper docutils container" id="equation-eq7">
+<div class="math notranslate nohighlight" id="equation-eq7">
+<span class="eqno">(7)<a class="headerlink" href="#equation-eq7" title="Link to this equation">¶</a></span>\[b(t) = E[V_i|t] - \frac{\mu P_b(t)}{\varepsilon+\mu P_b(t)}(E[V_i|t]-\underline{V}_i)\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-eq8">
+<div class="math notranslate nohighlight" id="equation-eq8">
+<span class="eqno">(8)<a class="headerlink" href="#equation-eq8" title="Link to this equation">¶</a></span>\[a(t) = E[V_i|t] + \frac{\mu P_g(t)}{\varepsilon+\mu P_g(t)}(\overline{V}_i-E[V_i|t])\]</div>
+</div>
+<p>Thus, the bid-ask spread is <span class="math notranslate nohighlight">\(a(t)-b(t)\)</span>, which is:</p>
+<div class="math-wrapper docutils container" id="equation-eq9">
+<div class="math notranslate nohighlight" id="equation-eq9">
+<span class="eqno">(9)<a class="headerlink" href="#equation-eq9" title="Link to this equation">¶</a></span>\[a(t)-b(t) = \frac{\mu P_g(t)}{\varepsilon+\mu P_g(t)}(\overline{V}_i-E[V_i|t]) + \frac{\mu P_b(t)}{\varepsilon+\mu P_b(t)}(E[V_i|t]-\underline{V}_i)\]</div>
+</div>
+<p>This indicates that the bid-ask spread at time <span class="math notranslate nohighlight">\(t\)</span> is actually:</p>
+<ul class="simple">
+<li><p>The probability of a buy order being an informed trade times the
+expected loss due to the informed buyer</p></li>
+<li><p>The probability of a sell order being an informed trade times the
+expected loss due to the informed seller</p></li>
+</ul>
+<p>Therefore, the probability that any trade at time <span class="math notranslate nohighlight">\(t\)</span> is based on
+asymmetric information from informed traders is the sum of these two
+probabilities:</p>
+<div class="math-wrapper docutils container" id="equation-eq10">
+<div class="math notranslate nohighlight" id="equation-eq10">
+<span class="eqno">(10)<a class="headerlink" href="#equation-eq10" title="Link to this equation">¶</a></span>\[PIN(t) = \frac{\mu P_g(t)}{\varepsilon+\mu P_g(t)} + \frac{\mu P_b(t)}{\varepsilon+\mu P_b(t)} = \frac{\mu(1-P_n(t))}{\mu(1-P_n(t))+2\varepsilon}\]</div>
+</div>
+<p>If no information event occurs (<span class="math notranslate nohighlight">\(P_n(t)=1\)</span>) or there are no
+informed trades (<span class="math notranslate nohighlight">\(\mu=0\)</span>), both PIN and the bid-ask spread should
+be zero. If the probabilities of positive and negative news are equal,
+i.e., <span class="math notranslate nohighlight">\(\delta=1-\delta\)</span>, the bid-ask spread can be simplified to:</p>
+<div class="math-wrapper docutils container" id="equation-eq11">
+<div class="math notranslate nohighlight" id="equation-eq11">
+<span class="eqno">(11)<a class="headerlink" href="#equation-eq11" title="Link to this equation">¶</a></span>\[a(t)-b(t) = \frac{\alpha\mu}{\alpha\mu+2\varepsilon}[\overline{V}_i-\underline{V}_i]\]</div>
+</div>
+<p>And the PIN measure is simplified to:</p>
+<div class="math-wrapper docutils container" id="equation-eq12">
+<div class="math notranslate nohighlight" id="equation-eq12">
+<span class="eqno">(12)<a class="headerlink" href="#equation-eq12" title="Link to this equation">¶</a></span>\[PIN(t) = \frac{\alpha\mu}{\alpha\mu+2\varepsilon}\]</div>
+</div>
+</section>
+<section id="model-estimation">
+<h3>Model Estimation<a class="headerlink" href="#model-estimation" title="Link to this heading">¶</a></h3>
+<p>The parameters <span class="math notranslate nohighlight">\(\theta=(\alpha, \delta, \varepsilon, \mu)\)</span> are not
+easy to estimate because we can only observe the arrival of buy and sell
+orders. In this model, the daily buy and sell orders are assumed to
+follow one of the three Poisson processes. Although we don’t know which
+process it is specifically, the overall idea is: more buy orders imply
+potential good news, more sell orders imply potential bad news, and
+overall buying and selling will decrease when there is no new
+information. With this idea in mind, we can try to estimate
+<span class="math notranslate nohighlight">\(\theta\)</span> using the maximum likelihood estimation (MLE) method.</p>
+<p>First, according to the trading model shown in the diagram, assume that
+there is bad news on a certain day, then the arrival rate of sell orders
+is <span class="math notranslate nohighlight">\((\mu+\varepsilon)\)</span>, which means both informed and uninformed
+traders participate in selling. The arrival rate of buy orders is
+<span class="math notranslate nohighlight">\(\varepsilon\)</span>, that is, only uninformed traders will continue to
+buy. Therefore, the probability of observing a sequence of trades with
+<span class="math notranslate nohighlight">\(B\)</span> buy orders and <span class="math notranslate nohighlight">\(S\)</span> sell orders in a period of time is:</p>
+<div class="math-wrapper docutils container" id="equation-eq13">
+<div class="math notranslate nohighlight" id="equation-eq13">
+<span class="eqno">(13)<a class="headerlink" href="#equation-eq13" title="Link to this equation">¶</a></span>\[e^{-\varepsilon} \frac{\varepsilon^B}{B!} e^{-(\mu+\varepsilon)} \frac{(\mu+\varepsilon)^S}{S!}\]</div>
+</div>
+<p>If there is good news on a certain day, the probability of observing a
+sequence of trades with <span class="math notranslate nohighlight">\(B\)</span> buy orders and <span class="math notranslate nohighlight">\(S\)</span> sell orders
+in a period of time is:</p>
+<div class="math-wrapper docutils container" id="equation-eq14">
+<div class="math notranslate nohighlight" id="equation-eq14">
+<span class="eqno">(14)<a class="headerlink" href="#equation-eq14" title="Link to this equation">¶</a></span>\[e^{-\varepsilon} \frac{\varepsilon^B}{B!} e^{-\varepsilon} \frac{\varepsilon^S}{S!}\]</div>
+</div>
+<p>If there is no new information on a certain day, the probability of
+observing a sequence of trades with <span class="math notranslate nohighlight">\(B\)</span> buy orders and <span class="math notranslate nohighlight">\(S\)</span>
+sell orders in a period of time is:</p>
+<div class="math-wrapper docutils container" id="equation-eq15">
+<div class="math notranslate nohighlight" id="equation-eq15">
+<span class="eqno">(15)<a class="headerlink" href="#equation-eq15" title="Link to this equation">¶</a></span>\[e^{-(\mu+\varepsilon)} \frac{(\mu+\varepsilon)^B}{B!} e^{-\varepsilon} \frac{\varepsilon^S}{S!}\]</div>
+</div>
+<p>So, the probability of observing a total of <span class="math notranslate nohighlight">\(B\)</span> buy orders and
+<span class="math notranslate nohighlight">\(S\)</span> sell orders on a trading day should be the weighted average of
+the above three possibilities, and the weights here are the
+probabilities of each possibility. Therefore, we can write out the
+likelihood function:</p>
+<div class="math-wrapper docutils container" id="equation-eq16">
+<div class="math notranslate nohighlight" id="equation-eq16">
+<span class="eqno">(16)<a class="headerlink" href="#equation-eq16" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align}
+L((B, S)| \theta)= &amp;(1-\alpha)e^{-\varepsilon} \frac{\varepsilon^B}{B!} e^{-\varepsilon} \frac{\varepsilon^S}{S!} \\\\
+&amp;+ \alpha\delta  e^{-\varepsilon} \frac{\varepsilon^B}{B!} e^{-(\mu+\varepsilon)} \frac{(\mu+\varepsilon)^S}{S!} \\\\
+&amp;+ \alpha(1-\delta) e^{-(\mu+\varepsilon)} \frac{(\mu+\varepsilon)^B}{B!} e^{-\varepsilon} \frac{\varepsilon^S}{S!}
+\end{align}\end{split}\]</div>
+</div>
+<p>Because days are independent, the likelihood of observing the data
+<span class="math notranslate nohighlight">\(M=(B_i,S_i)_{i=1}^N\)</span> over <span class="math notranslate nohighlight">\(N\)</span> days is jus the product of
+the daily likelihoods. Hence, the objective function of the maximum
+likelihood function is:</p>
+<div class="math-wrapper docutils container" id="equation-eq17">
+<div class="math notranslate nohighlight" id="equation-eq17">
+<span class="eqno">(17)<a class="headerlink" href="#equation-eq17" title="Link to this equation">¶</a></span>\[L(M|\theta)=\prod_{i=1}^{N}L(\theta|(B_i, S_i))\]</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The real challenge is that this function is filled with powers and
+factorials. Even if the time element is chosen very small, some
+highly liquid assets will still have hundreds of transactions within
+a few seconds. Therefore, either <span class="math notranslate nohighlight">\(B!\)</span>, <span class="math notranslate nohighlight">\(S!\)</span>, or
+<span class="math notranslate nohighlight">\((\mu+\varepsilon)^B\)</span> can cause overflow. So, further
+processing of the objective function here is extremely important.</p>
+<p>Notice that in equation <a class="reference internal" href="#equation-eq16">(16)</a>, we can extract a
+common factor from the three terms
+<span class="math notranslate nohighlight">\(e^{-2\varepsilon}(\mu+\varepsilon)^{B+S}/(B!S!)\)</span>. Afterwards,
+substitute <span class="math notranslate nohighlight">\(x\equiv \frac{\varepsilon}{\mu+\varepsilon}\in [0,
+1]\)</span> into it. The transformed likelihood function, after taking the
+logarithm, will be in the form:</p>
+<div class="math-wrapper docutils container" id="equation-eq18">
+<div class="math notranslate nohighlight" id="equation-eq18">
+<span class="eqno">(18)<a class="headerlink" href="#equation-eq18" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align}
+l((B, S)| \theta)=&amp;\ln(L((B, S)| \theta)) \\\\
+=&amp;-2\varepsilon+(B+S)\ln(\mu+\varepsilon)  \\\\
+&amp;+\ln((1-\alpha)x^{B+S}+\alpha\delta e^{-\mu}x^B + \alpha(1-\delta)e^{-\mu}x^S) \\\\
+&amp;-\ln(B!S!)
+\end{align}\end{split}\]</div>
+</div>
+<p>Now, since the last term <span class="math notranslate nohighlight">\(\ln(B!S!)\)</span> does not affect the
+parameter estimation at all, it can be safely excluded. The remaining
+part can avoid overflow as the introduction of <span class="math notranslate nohighlight">\(x\equiv
+\frac{\varepsilon}{\mu+\varepsilon}\in [0, 1]\)</span> prevents the overflow
+error caused by <span class="math notranslate nohighlight">\((\mu+\varepsilon)&gt;1\)</span>.</p>
+</div>
+</section>
+</section>
+<section id="easley-et-al-2002-model">
+<h2>Easley et. al. (2002) Model<a class="headerlink" href="#easley-et-al-2002-model" title="Link to this heading">¶</a></h2>
+<p>Easley et. al. (2002) additionally allow different arrival rates for
+buys <span class="math notranslate nohighlight">\(\varepsilon_b\)</span> and sells <span class="math notranslate nohighlight">\(\varepsilon_s\)</span>.</p>
+<img alt="Theoretical model of PIN" class="align-center" src="../../_images/theoretical-model-of-pin-2002.jpg" />
+<p>The PIN measure is:</p>
+<div class="math-wrapper docutils container" id="equation-pin">
+<div class="math notranslate nohighlight" id="equation-pin">
+<span class="eqno">(19)<a class="headerlink" href="#equation-pin" title="Link to this equation">¶</a></span>\[PIN(t) = \frac{\alpha\mu}{\alpha\mu+\varepsilon_b+\varepsilon_s}\]</div>
+</div>
+<p>After similar steps of derivation, the likelihood function is given by</p>
+<div class="math-wrapper docutils container" id="equation-likelihoodfunction2002">
+<div class="math notranslate nohighlight" id="equation-likelihoodfunction2002">
+<span class="eqno">(20)<a class="headerlink" href="#equation-likelihoodfunction2002" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align}
+L((B, S)| \theta)= &amp;(1-\alpha)e^{-\varepsilon_b} \frac{\varepsilon_b^B}{B!} e^{-\varepsilon_s} \frac{\varepsilon_s^S}{S!} \\\\
+&amp;+ \alpha\delta  e^{-\varepsilon_b} \frac{\varepsilon_b^B}{B!} e^{-(\mu+\varepsilon_s)} \frac{(\mu+\varepsilon_s)^S}{S!} \\\\
+&amp;+ \alpha(1-\delta) e^{-(\mu+\varepsilon_b)} \frac{(\mu+\varepsilon_b)^B}{B!} e^{-\varepsilon_s} \frac{\varepsilon_s^S}{S!}
+\end{align}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\theta=(\alpha, \delta, \varepsilon_b, \varepsilon_s,
+\mu)\)</span>.</p>
+<section id="id1">
+<h3>Model Estimation<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>Many methods have been proposed to better estimate the likelihood function
+<a class="reference internal" href="#equation-likelihoodfunction2002">(20)</a> via MLE. Here I discuss two of
+them, specifically, the log likelihood function after dropping the
+constant term.</p>
+<section id="easley-hvidkjaer-and-ohara-2010">
+<h4>Easley, Hvidkjaer, and O’Hara (2010)<a class="headerlink" href="#easley-hvidkjaer-and-ohara-2010" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container" id="equation-eho2010">
+<div class="math notranslate nohighlight" id="equation-eho2010">
+<span class="eqno">(21)<a class="headerlink" href="#equation-eho2010" title="Link to this equation">¶</a></span>\[\begin{split}   \begin{align}
+   l((B_i, S_i)_{i=1}^N | \theta) =&amp;\sum_{i=1}^N \left[ -\varepsilon_b -\varepsilon_s +M_i(\ln x_b + \ln x_s) + B_i \ln(\mu+\varepsilon_b) + S_i \ln(\mu+\varepsilon_s)\right]  \\\\
+   &amp;+\sum_{i=1}^N\ln\left[\alpha(1-\delta)e^{-\mu}x_s^{S_i-M_i}x_b^{-M_i} + \alpha\delta e^{-\mu} x_b^{B_i-M_i}x_s^{-M_i}+ (1-\alpha)x_s^{S_i-M_i}x_b^{B_i-M_i} \right]
+   \end{align}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(M_i=\min(B_i, S_i)+\max(B_i, S_i)/2\)</span>,
+<span class="math notranslate nohighlight">\(x_s=\varepsilon_s/(\mu+\varepsilon_s)\)</span> and
+<span class="math notranslate nohighlight">\(x_b=\varepsilon_b/(\mu+\varepsilon_b)\)</span>. The factoring of
+<span class="math notranslate nohighlight">\(x_b^{M_i}\)</span> and <span class="math notranslate nohighlight">\(x_s^{M_i}\)</span> is done to increase the
+computing efficiency and reduce truncation error.</p>
+</section>
+<section id="lin-and-ke-2011">
+<h4>Lin and Ke (2011)<a class="headerlink" href="#lin-and-ke-2011" title="Link to this heading">¶</a></h4>
+<p>Lin and Ke (2011) point out that floating-point exception in computer
+software narrows the set of feasible solutions that maximizes the above
+factorized likelihood function, which in turn causes a downward bias in
+the estimate of PIN. They recommend the following factorization of the
+joint likelihood function.</p>
+<div class="math-wrapper docutils container" id="equation-lk2011">
+<div class="math notranslate nohighlight" id="equation-lk2011">
+<span class="eqno">(22)<a class="headerlink" href="#equation-lk2011" title="Link to this equation">¶</a></span>\[\begin{split}   \begin{align}
+   l((B_i, S_i)_{i=1}^N | \theta) =&amp;\sum_{i=1}^N \left[ -\varepsilon_b -\varepsilon_s + B_i \ln(\mu+\varepsilon_b) + S_i \ln(\mu+\varepsilon_s) + e_{\max i}\right]  \\\\
+   &amp;+\sum_{i=1}^N\ln\left[\alpha(1-\delta)\text{exp}(e_{1i}-e_{\max i}) + \alpha\delta\text{exp}(e_{2i}-e_{\max i}) + (1-\alpha)\text{exp}(e_{3i}-e_{\max i}) \right]
+   \end{align}\end{split}\]</div>
+</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(e_{1i}=-\mu-S_i\ln(1+\mu/\varepsilon_s)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(e_{2i}=-\mu-B_i\ln(1+\mu/\varepsilon_b)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(e_{3i}=-B_i\ln(1+\mu/\varepsilon_b)-S_i\ln(1+\mu/\varepsilon_s)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(e_{\max i}=\max (e_{1i},e_{2i},e_{3i})\)</span></p></li>
+</ul>
+<p>Yan and Zhang (2012) further propose the set of initial values to use in
+MLE.</p>
+</section>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1111/j.1540-6261.1996.tb04074.x">Easley, Kiefer, O’Hara, and Paperman (1996)</a>, Liquidity,
+Information, and Infrequently Traded Stocks, <em>The Journal of
+Finance</em>, 51, 1405-1436.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1111/1540-6261.00493">Easley, Hvidkjaer, and O’Hara (2002)</a>, Is Information Risk a
+Determinant of Asset Returns?, <em>The Journal of Finance</em>, 57,
+2185-2221.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1017/S0022109010000074">Easley, Hvidkjaer, and O’Hara (2010)</a>, Factoring information
+into returns, <em>Journal of Financial and Quantitative Analysis</em>, 45,
+293–309.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1016/j.finmar.2011.03.001">Lin and Ke (2011)</a>,
+A computing bias in estimating the probability of informed trading,
+<em>Journal of Financial Markets</em>, 14, 625–640.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1016/j.jbankfin.2011.08.003">Yan and Zhang (2012)</a>, An improved
+estimation method and empirical properties of the probability of
+informed trading, <em>Journal of Banking &amp; Finance</em>, 36(2), 454-467.</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.measures.PIN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.measures.</span></span><span class="sig-name descname"><span class="pre">PIN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#"><span class="doc">Probability of Informed Trading (PIN)</span></a>
+based on the canonical Easley et al (2002).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.PIN.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>B</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(T,)</span></code> array of buys</p></li>
+<li><p><strong>S</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(T,)</span></code> array of sells</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.PIN.estimate">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EHO2010'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#frds.measures.PIN.Parameters" title="frds.measures._probability_of_informed_trading.PIN.Parameters"><span class="pre">Parameters</span></a></span></span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN.estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN.estimate" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate PIN</p>
+<p>As in Yan and Zhang (2012), a grid search is performed to select the best
+initial parameters giving the highest log likelihood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – estimation method (“EHO2010”, “LK2011”). Defaults to “EHO2010”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#frds.measures.PIN.Parameters" title="frds.measures.PIN.Parameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.measures.PIN.Parameters</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>params</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.PIN.init_params_grid_search">
+<span class="sig-name descname"><span class="pre">init_params_grid_search</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN.init_params_grid_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN.init_params_grid_search" title="Link to this definition">¶</a></dt>
+<dd><p>Yields initial parameters for MLE</p>
+<p>The initial values are selected as in Yan and Zhang (2012).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Generator[tuple, None, None]</em> – (alpha, delta, eB, eS, mu)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.PIN.loglikelihood_EHO2010">
+<span class="sig-name descname"><span class="pre">loglikelihood_EHO2010</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN.loglikelihood_EHO2010"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN.loglikelihood_EHO2010" title="Link to this definition">¶</a></dt>
+<dd><p>Log likelihood as in Easley, Hvidkjaer, and O’Hara (2010)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – (alpha, delta, eB, eS, mu)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>negative log likelihood</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.measures.PIN.loglikelihood_LK2011">
+<span class="sig-name descname"><span class="pre">loglikelihood_LK2011</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/measures/_probability_of_informed_trading/#PIN.loglikelihood_LK2011"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.measures.PIN.loglikelihood_LK2011" title="Link to this definition">¶</a></dt>
+<dd><p>Log likelihood as in Lin and Ke (2011)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – (alpha, delta, eB, eS, mu)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>negative log likelihood</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.measures.PIN.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.measures.PIN.</span></span><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frds.measures.PIN.Parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Consider the following example buys and sells consistent with the Easley,
+Hvidjkaer, and O’Hara example on p. 2198 of
+Easley, David, Soeren Hvidkjaer, and Maureen O’Hara,
+2002, “Is Information Risk a Determinant of Asset Returns?”,
+The Journal of Finance, 57 (5), pp. 2185-2221.</p>
+<p>The parameters in this example would be identified as
+<span class="math notranslate nohighlight">\(\varepsilon_b=\varepsilon_s=40\)</span>, <span class="math notranslate nohighlight">\(\mu=50\)</span>, <span class="math notranslate nohighlight">\(\alpha=0.4\)</span>,
+and <span class="math notranslate nohighlight">\(\delta=0.5\)</span>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.measures</span><span class="w"> </span><span class="kn">import</span> <span class="n">PIN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">90</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">40</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">PIN</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;LK2011&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="go">Parameters(alpha=0.4000034024442184,</span>
+<span class="go">           delta=0.50000867584611,</span>
+<span class="go">           epsilon_b=39.9999707607252,</span>
+<span class="go">           epsilon_s=40.00012455827183,</span>
+<span class="go">           mu=49.99988692576548,</span>
+<span class="go">           loglikelihood=1485.6558133261797,</span>
+<span class="go">           pin=0.20000080849728463,</span>
+<span class="go">           method=&#39;LK2011&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">PIN</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;EHO2010&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="go">Parameters(alpha=0.400000965289364,</span>
+<span class="go">           delta=0.4999993508809301,</span>
+<span class="go">           epsilon_b=40.00007364091631,</span>
+<span class="go">           epsilon_s=40.000051685750314,</span>
+<span class="go">           mu=49.99989185329409,</span>
+<span class="go">           loglikelihood=1485.6558133270914,</span>
+<span class="go">           pin=0.19999978939239277,</span>
+<span class="go">           method=&#39;EHO2010&#39;)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../spread_and_price_impact/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Spread and Price Impact</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../option_prices/">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Option Prices</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 - 2024, Mingze Gao
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mgao6767/frds" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Probability of Informed Trading (PIN)</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#original-easley-et-al-1996">Original Easley et. al. (1996)</a><ul>
+<li><a class="reference internal" href="#trading-process">Trading Process</a></li>
+<li><a class="reference internal" href="#model-estimation">Model Estimation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#easley-et-al-2002-model">Easley et. al. (2002) Model</a><ul>
+<li><a class="reference internal" href="#id1">Model Estimation</a><ul>
+<li><a class="reference internal" href="#easley-hvidkjaer-and-ohara-2010">Easley, Hvidkjaer, and O’Hara (2010)</a></li>
+<li><a class="reference internal" href="#lin-and-ke-2011">Lin and Ke (2011)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#frds.measures.PIN"><code class="docutils literal notranslate"><span class="pre">PIN</span></code></a><ul>
+<li><a class="reference internal" href="#frds.measures.PIN.__init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.PIN.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.PIN.init_params_grid_search"><code class="docutils literal notranslate"><span class="pre">init_params_grid_search()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.PIN.loglikelihood_EHO2010"><code class="docutils literal notranslate"><span class="pre">loglikelihood_EHO2010()</span></code></a></li>
+<li><a class="reference internal" href="#frds.measures.PIN.loglikelihood_LK2011"><code class="docutils literal notranslate"><span class="pre">loglikelihood_LK2011()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frds.measures.PIN.Parameters"><code class="docutils literal notranslate"><span class="pre">Parameters</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=187304be"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=35a8b989"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

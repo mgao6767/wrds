@@ -1,0 +1,730 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="GARCH(1,1) - DCC" href="../garch-dcc/" /><link rel="prev" title="GARCH(1,1)" href="../garch/" />
+        <link rel="canonical" href="https://frds.io/algorithms/garch-ccc/" />
+
+    <link rel="shortcut icon" href="../../_static/frds.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>GARCH(1,1) - CCC - frds</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=415d3439" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">frds</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/frds_icon.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">frds</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../measures/">Supported Measures</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Supported Measures</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/absorption_ratio/">Absorption Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/contingent_claim_analysis/">Contingent Claim Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/distress_insurance_premium/">Distress Insurance Premium</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/kyle_lambda/">Kyle’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/lerner_index/">Lerner Index (Banks)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/limit_order_book_slope/">Limit Order Book Slope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/long_run_mes/">Long-Run Marginal Expected Shortfall (LRMES)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/marginal_expected_shortfall/">Marginal Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/option_prices/">Option Prices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/probability_of_informed_trading/">Probability of Informed Trading (PIN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/spread_and_price_impact/">Spread and Price Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/srisk/">SRISK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/systemic_expected_shortfall/">Systemic Expected Shortfall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../measures/z_score/">Z-score</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Algorithms</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Algorithms</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../garch/">GARCH(1,1)</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GARCH(1,1) - CCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../garch-dcc/">GARCH(1,1) - DCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gjr-garch/">GJR-GARCH(1,1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gjr-garch-dcc/">GJR-GARCH(1,1) - DCC</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../datasets/">Datasets</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Datasets</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datasets/stock-returns/">Stock Returns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/mgao6767/frds/">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mingze-gao.com">Mingze Gao</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/algorithms/garch-ccc.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="garch-1-1-ccc">
+<h1>GARCH(1,1) - CCC<a class="headerlink" href="#garch-1-1-ccc" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>The Multivariate GARCH(1,1) model generalizes the univariate <a class="reference internal" href="../garch/"><span class="doc">GARCH(1,1)</span></a>
+framework to multiple time series, capturing not only the conditional variances
+but also the conditional covariances between the series. One common form is the
+<strong>Constant Conditional Correlation (CCC) model</strong> proposed by Bollerslev (1990).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Check <a class="reference internal" href="#examples">Examples</a> section for code guide and comparison to Stata.</p>
+</div>
+<section id="return-equation">
+<h3>Return equation<a class="headerlink" href="#return-equation" title="Link to this heading">¶</a></h3>
+<p>The return equation for a <span class="math notranslate nohighlight">\(N\)</span>-dimensional time series is:</p>
+<div class="math-wrapper docutils container" id="equation-mv-return-eq">
+<div class="math notranslate nohighlight" id="equation-mv-return-eq">
+<span class="eqno">(1)<a class="headerlink" href="#equation-mv-return-eq" title="Link to this equation">¶</a></span>\[\mathbf{r}_t = \boldsymbol{\mu} + \boldsymbol{\epsilon}_t\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{r}_t\)</span> is a <span class="math notranslate nohighlight">\(N \times 1\)</span> vector of returns, and <span class="math notranslate nohighlight">\(\boldsymbol{\mu}\)</span> is a <span class="math notranslate nohighlight">\(N \times 1\)</span> vector of mean returns. <span class="math notranslate nohighlight">\(\boldsymbol{\epsilon}_t\)</span> is the <span class="math notranslate nohighlight">\(N \times 1\)</span> vector of shock terms.</p>
+</section>
+<section id="shock-equation">
+<h3>Shock equation<a class="headerlink" href="#shock-equation" title="Link to this heading">¶</a></h3>
+<p>The shock term is modelled as:</p>
+<div class="math-wrapper docutils container" id="equation-mv-shock-eq">
+<div class="math notranslate nohighlight" id="equation-mv-shock-eq">
+<span class="eqno">(2)<a class="headerlink" href="#equation-mv-shock-eq" title="Link to this equation">¶</a></span>\[\boldsymbol{\epsilon}_t = \mathbf{H}_t^{1/2} \mathbf{z}_t\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{H}_t\)</span> is a <span class="math notranslate nohighlight">\(N \times N\)</span> conditional covariance matrix,
+<span class="math notranslate nohighlight">\(\mathbf{H}_t^{1/2}\)</span> is a <span class="math notranslate nohighlight">\(N \times N\)</span> positive definite matrix,
+and <span class="math notranslate nohighlight">\(\mathbf{z}_t\)</span> is a <span class="math notranslate nohighlight">\(N \times 1\)</span> vector of standard normal innovations.</p>
+</section>
+<section id="conditional-covariance-matrix">
+<h3>Conditional covariance matrix<a class="headerlink" href="#conditional-covariance-matrix" title="Link to this heading">¶</a></h3>
+<p>In the CCC-GARCH(1,1) model, the conditional covariance matrix <span class="math notranslate nohighlight">\(\mathbf{H}_t\)</span> is constructed as:</p>
+<div class="math-wrapper docutils container" id="equation-mv-volatility-eq">
+<div class="math notranslate nohighlight" id="equation-mv-volatility-eq">
+<span class="eqno">(3)<a class="headerlink" href="#equation-mv-volatility-eq" title="Link to this equation">¶</a></span>\[\mathbf{H}_t = \mathbf{D}_t\mathbf{R}\mathbf{D}_t\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{D}_t=\text{diag}(\mathbf{h}_t)^{1/2}\)</span>,
+and <span class="math notranslate nohighlight">\(\mathbf{h}_t\)</span> is a <span class="math notranslate nohighlight">\(N \times 1\)</span> vector whose elements are univariate GARCH(1,1) variances for each time series.
+<span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is a positive definite constant conditional correlation matrix.</p>
+<div class="note admonition">
+<p class="admonition-title">A bivarite example</p>
+<p>In a bivariate GARCH(1,1) setting, we have two univariate GARCH(1,1) processes, one for each return series.
+Specifically, the GARCH(1,1) equations for the conditional variances <span class="math notranslate nohighlight">\(h_{1t}\)</span> and <span class="math notranslate nohighlight">\(h_{2t}\)</span> can be written as:</p>
+<div class="math-wrapper docutils container" id="equation-garch1-modified">
+<div class="math notranslate nohighlight" id="equation-garch1-modified">
+<span class="eqno">(4)<a class="headerlink" href="#equation-garch1-modified" title="Link to this equation">¶</a></span>\[h_{1t} = \omega_1 + \alpha_1 \epsilon_{1,t-1}^2 + \beta_1 h_{1,t-1}\]</div>
+</div>
+<div class="math-wrapper docutils container" id="equation-garch2-modified">
+<div class="math notranslate nohighlight" id="equation-garch2-modified">
+<span class="eqno">(5)<a class="headerlink" href="#equation-garch2-modified" title="Link to this equation">¶</a></span>\[h_{2t} = \omega_2 + \alpha_2 \epsilon_{2,t-1}^2 + \beta_2 h_{2,t-1}\]</div>
+</div>
+<p>where,</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\epsilon_{1,t-1}\)</span> and <span class="math notranslate nohighlight">\(\epsilon_{2,t-1}\)</span> are past shock terms from their respective time series.</p></li>
+<li><p>The parameters <span class="math notranslate nohighlight">\(\omega_1, \alpha_1, \beta_1, \omega_2, \alpha_2, \beta_2\)</span> are to be estimated.</p></li>
+</ul>
+<p>With these individual variances, the conditional covariance matrix <span class="math notranslate nohighlight">\(\mathbf{H}_t\)</span> is:</p>
+<div class="math-wrapper docutils container" id="equation-conditional-cov-matrix-modified">
+<div class="math notranslate nohighlight" id="equation-conditional-cov-matrix-modified">
+<span class="eqno">(6)<a class="headerlink" href="#equation-conditional-cov-matrix-modified" title="Link to this equation">¶</a></span>\[\begin{split}\mathbf{H}_t = \begin{pmatrix}
+h_{1t} &amp; \rho\sqrt{h_{1t} h_{2t}} \\\\
+\rho\sqrt{h_{1t} h_{2t}} &amp; h_{2t}
+\end{pmatrix}\end{split}\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(\rho\)</span> is the correlation between the two time series.
+It is assumed to be constant over time in the CCC-GARCH framework.</p>
+<p>The constant correlation matrix <span class="math notranslate nohighlight">\(\mathbf{R}\)</span> simplifies to a <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrix:</p>
+<div class="math-wrapper docutils container" id="equation-bivariate-constant-corr-matrix">
+<div class="math notranslate nohighlight" id="equation-bivariate-constant-corr-matrix">
+<span class="eqno">(7)<a class="headerlink" href="#equation-bivariate-constant-corr-matrix" title="Link to this equation">¶</a></span>\[\begin{split}\mathbf{R} =
+\begin{pmatrix}
+   1      &amp; \rho \\\\
+   \rho &amp; 1
+\end{pmatrix}\end{split}\]</div>
+</div>
+</div>
+</section>
+<section id="log-likelihood-function">
+<h3>Log-likelihood function<a class="headerlink" href="#log-likelihood-function" title="Link to this heading">¶</a></h3>
+<p>The log-likelihood function for the <span class="math notranslate nohighlight">\(N\)</span>-dimensional multivariate GARCH CCC model is:</p>
+<div class="math-wrapper docutils container" id="equation-mv-log-likelihood">
+<div class="math notranslate nohighlight" id="equation-mv-log-likelihood">
+<span class="eqno">(8)<a class="headerlink" href="#equation-mv-log-likelihood" title="Link to this equation">¶</a></span>\[\begin{split}\begin{align}
+\ell &amp;= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + \ln(|\mathbf{H}_t|) + \mathbf{\epsilon}_t' \mathbf{H}_t^{-1} \mathbf{\epsilon}_t \right] \\\\
+     &amp;= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + \ln(|\mathbf{D}_t\mathbf{R}\mathbf{D}_t|) + \mathbf{\epsilon}_t' \mathbf{D}_t^{-1}\mathbf{R}^{-1}\mathbf{D}_t^{-1} \mathbf{\epsilon}_t \right] \\\\
+     &amp;= -\frac{1}{2} \sum_{t=1}^T \left[ N\ln(2\pi) + 2 \ln(|\mathbf{D}_t|) + \ln(|\mathbf{R}|)+ \mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t \right]
+\end{align}\end{split}\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{z}_t=\mathbf{D}_t^{-1}\mathbf{\epsilon}_t\)</span> is the vector of standardized residuals.</p>
+<p>This function is maximized to estimate the model parameters.</p>
+<div class="note admonition">
+<p class="admonition-title">A bivariate example</p>
+<p>In the bivariate case, the log-likelihood function can be specifically written as a function of all parameters.</p>
+<p>The log-likelihood function <span class="math notranslate nohighlight">\(\ell\)</span> for the bivariate case with all parameters <span class="math notranslate nohighlight">\(\Theta = (\mu_1, \omega_1, \alpha_1, \beta_1, \mu_2, \omega_2, \alpha_2, \beta_2, \rho)\)</span> is:</p>
+<div class="math-wrapper docutils container" id="equation-log-likelihood-bivariate">
+<div class="math notranslate nohighlight" id="equation-log-likelihood-bivariate">
+<span class="eqno">(9)<a class="headerlink" href="#equation-log-likelihood-bivariate" title="Link to this equation">¶</a></span>\[\ell(\Theta) = -\frac{1}{2} \sum_{t=1}^T \left[ 2\ln(2\pi) + 2 \ln(|\mathbf{D}_t|) + \ln(|\mathbf{R}|)+ \mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t \right]\]</div>
+</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathbf{z}_t'\)</span> is the transpose of the vector of standardized residuals <span class="math notranslate nohighlight">\(\mathbf{z}_t\)</span>,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{z}_t = \begin{pmatrix}
+  z_{1,t} \\
+  z_{2,t}
+\end{pmatrix}\end{split}\]</div>
+</div>
+<p>Further,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{D}_t = \begin{pmatrix}
+\sqrt{h_{1t}} &amp; 0 \\\\
+0 &amp; \sqrt{h_{2t}}
+\end{pmatrix}\end{split}\]</div>
+</div>
+<p>so the log-determinant of <span class="math notranslate nohighlight">\(\mathbf{D}_t\)</span> is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\ln(|\mathbf{D}_t|) = \frac{1}{2} \ln(h_{1t} h_{2t})\]</div>
+</div>
+<p>The log-determinant of <span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\ln(|\mathbf{R}|) = \ln(1 - \rho^2)\]</div>
+</div>
+<p>Inverse of <span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{R}^{-1} = \frac{1}{1 - \rho^2} \begin{pmatrix}
+1 &amp; -\rho \\
+-\rho &amp; 1
+\end{pmatrix}\end{split}\]</div>
+</div>
+<p>Lastly, <span class="math notranslate nohighlight">\(\mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t\)</span> is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\mathbf{z}_t' \mathbf{R}^{-1} \mathbf{z}_t = \frac{1}{1 - \rho^2} \left[ z_{1t}^2 - 2\rho z_{1t} z_{2t} + z_{2t}^2 \right]\]</div>
+</div>
+<p>Inserting all of these into <span class="math notranslate nohighlight">\(\ell(\Theta)\)</span> in equation <a class="reference internal" href="#equation-log-likelihood-bivariate">(9)</a>:</p>
+<div class="math-wrapper docutils container" id="equation-log-likelihood">
+<div class="math notranslate nohighlight" id="equation-log-likelihood">
+<span class="eqno">(10)<a class="headerlink" href="#equation-log-likelihood" title="Link to this equation">¶</a></span>\[\ell(\Theta) = -\frac{1}{2} \sum_{t=1}^T \left[ 2\ln(2\pi) + \ln(h_{1t} h_{2t} (1 - \rho^2)) + \frac{1}{1 - \rho^2} \left( z_{1t}^2 - 2\rho z_{1t} z_{2t} + z_{2t}^2 \right) \right]\]</div>
+</div>
+</div>
+</section>
+</section>
+<section id="estimation-techniques">
+<h2>Estimation techniques<a class="headerlink" href="#estimation-techniques" title="Link to this heading">¶</a></h2>
+<p>My implementation of <a class="reference internal" href="#frds.algorithms.GARCHModel_CCC" title="frds.algorithms.GARCHModel_CCC"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GARCHModel_CCC</span></code></a> fits the GARCH-CCC model
+by simultaneously estimating all parameters via maxmimizing the log-likelihood <a class="reference internal" href="../gjr-garch/#equation-log-likelihood">(5)</a>.</p>
+<p>General steps are:</p>
+<ol class="arabic simple">
+<li><p>Use <a class="reference internal" href="../garch/#frds.algorithms.GARCHModel" title="frds.algorithms.GARCHModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GARCHModel</span></code></a> to estimate the <a class="reference internal" href="../garch/"><span class="doc">GARCH(1,1)</span></a> model for each of the returns.</p></li>
+<li><p>Use the standardized residuals from the estimated GARCH models to compute correlation coefficient.</p></li>
+<li><p>Use as starting vaues the estimated parameters from above in optimizing the loglikelihood function.</p></li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.2307/1912773">Engle, R. F. (1982)</a>, “Autoregressive Conditional Heteroskedasticity with Estimates of the Variance of United Kingdom Inflation.” <em>Econometrica</em>, 50(4), 987-1007.</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.2307/2109358">Bollerslev, T. (1990)</a>, “Modelling the Coherence in Short-Run Nominal Exchange Rates: A Multivariate Generalized ARCH Model.” <em>Review of Economics and Statistics</em>, 72(3), 498-505.</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.algorithms.</span></span><span class="sig-name descname"><span class="pre">GARCHModel_CCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/frds/algorithms/_mgarch/#GARCHModel_CCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#"><span class="doc">GARCH(1,1) - CCC</span></a> model with the following specification:</p>
+<ul class="simple">
+<li><p>Bivariate</p></li>
+<li><p>Constant mean</p></li>
+<li><p>Normal noise</p></li>
+</ul>
+<p>It estimates the model parameters only. No standard errors calculated.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">returns1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_mgarch/#GARCHModel_CCC.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>returns1</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(T,)</span></code> array of <code class="docutils literal notranslate"><span class="pre">T</span></code> returns of first asset</p></li>
+<li><p><strong>returns2</strong> (<em>np.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">(T,)</span></code> array of <code class="docutils literal notranslate"><span class="pre">T</span></code> returns of second asset</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">returns</span></code> is best to be percentage returns for optimization</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.Parameters" title="frds.algorithms._mgarch.GARCHModel_CCC.Parameters"><span class="pre">Parameters</span></a></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_mgarch/#GARCHModel_CCC.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates the Multivariate GARCH(1,1)-CCC parameters via MLE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.Parameters" title="frds.algorithms.GARCHModel_CCC.Parameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GARCHModel_CCC.Parameters</span></code></a></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.Parameters" title="frds.algorithms.GARCHModel_CCC.Parameters">Parameters</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC.loglikelihood_model">
+<span class="sig-name descname"><span class="pre">loglikelihood_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backcast1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backcast2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_bounds1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_bounds2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_mgarch/#GARCHModel_CCC.loglikelihood_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC.loglikelihood_model" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the negative log-likelihood based on the current <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>np.ndarray</em>) – [mu1, omega1, alpha1, beta1, mu2, omega2, alpha2, beta2, rho]</p></li>
+<li><p><strong>backcast1</strong> (<em>float</em>) – Backcast value for initializing the first return series variance.</p></li>
+<li><p><strong>backcast2</strong> (<em>float</em>) – Backcast value for initializing the second return series variance.</p></li>
+<li><p><strong>var_bounds1</strong> (<em>np.ndarray</em>) – Array of variance bounds for the first return series.</p></li>
+<li><p><strong>var_bounds2</strong> (<em>np.ndarray</em>) – Array of variance bounds for the second return series.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>negative log-likelihood</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC.loglikelihood">
+<span class="sig-name descname"><span class="pre">loglikelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resids1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resids2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/frds/algorithms/_mgarch/#GARCHModel_CCC.loglikelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC.loglikelihood" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the log-likelihood for a bivariate GARCH(1,1) model with constant correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resids1</strong> (<em>np.ndarray</em>) – Residuals for the first return series.</p></li>
+<li><p><strong>sigma2_1</strong> (<em>np.ndarray</em>) – Array of conditional variances for the first return series.</p></li>
+<li><p><strong>resids2</strong> (<em>np.ndarray</em>) – Residuals for the second return series.</p></li>
+<li><p><strong>sigma2_2</strong> (<em>np.ndarray</em>) – Array of conditional variances for the second return series.</p></li>
+<li><p><strong>rho</strong> (<em>float</em>) – Constant correlation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The log-likelihood value for the bivariate model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="frds.algorithms.GARCHModel_CCC.Parameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frds.algorithms.GARCHModel_CCC.</span></span><span class="sig-name descname"><span class="pre">Parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frds.algorithms.GARCHModel_CCC.Parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Let’s import the dataset.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.stata-press.com/data/r18/stocks.dta&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="n">data_url</span><span class="p">,</span> <span class="n">convert_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Scale returns to percentage returns for better optimization results</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">returns1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;toyota&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">returns2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;nissan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<p>Use <a class="reference internal" href="#frds.algorithms.GARCHModel_CCC" title="frds.algorithms.GARCHModel_CCC"><code class="xref py py-class docutils literal notranslate"><span class="pre">frds.algorithms.GARCHModel_CCC</span></code></a> to estimate a GARCH(1,1)-CCC.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">frds.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">GARCHModel_CCC</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_ccc</span> <span class="o">=</span> <span class="n">GARCHModel_CCC</span><span class="p">(</span><span class="n">returns1</span><span class="p">,</span> <span class="n">returns2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">model_ccc</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="go">Parameters(mu1=0.02745814255283541,</span>
+<span class="go">           omega1=0.03401400758840226,</span>
+<span class="go">           alpha1=0.06593379740524756,</span>
+<span class="go">           beta1=0.9219575443861723,</span>
+<span class="go">           mu2=0.009390068254041505,</span>
+<span class="go">           omega2=0.058694325049554734,</span>
+<span class="go">           alpha2=0.0830561828957614,</span>
+<span class="go">           beta2=0.9040961791372522,</span>
+<span class="go">           rho=0.6506770477876749,</span>
+<span class="go">           loglikelihood=-7281.321453218112)</span>
+</pre></div>
+</div>
+<p>These results are comparable to the ones obtained in Stata, and even marginally
+better based on log-likelihood. In Stata, we can estimate the same model as below:</p>
+<div class="highlight-stata notranslate"><div class="highlight"><pre><span></span><span class="k">webuse</span> stocks,<span class="k"> clear</span>
+<span class="k">replace</span> toyota = toyota <span class="o">*</span> <span class="m">100</span>
+<span class="k">replace</span> nissan = nissan <span class="o">*</span> <span class="m">100</span>
+mgarch ccc (toyota nissan = ),<span class="k"> arch</span>(<span class="m">1</span>) garch(<span class="m">1</span>)
+</pre></div>
+</div>
+<p>The Stata results are:</p>
+<div class="highlight-stata notranslate"><div class="highlight"><pre><span></span>Constant conditional correlation MGARCH model
+
+ Sample: <span class="m">1</span> thru <span class="m">2015</span>                                      Number of obs = <span class="m">2</span>,<span class="m">015</span>
+ Distribution: Gaussian                                   Wald <span class="nf">chi2</span>(.)  =     .
+ Log likelihood = <span class="o">-</span><span class="m">7282.961</span>                               Prob <span class="o">&gt;</span> chi2   =     .
+
+ <span class="o">-------------------------------------------------------------------------------------</span>
+                     | Coefficient  Std.<span class="k"> err</span>.      z    P<span class="o">&gt;</span>|z|     [<span class="m">95</span>%<span class="k"> conf</span>. interval]
+ <span class="o">--------------------+----------------------------------------------------------------</span>
+ toyota              |
+             _cons   |   .<span class="m">0277462</span>   .<span class="m">0302805</span>     <span class="m">0.92</span>   <span class="m">0.360</span>    <span class="o">-</span>.<span class="m">0316024</span>    .<span class="m">0870948</span>
+ <span class="o">--------------------+----------------------------------------------------------------</span>
+ ARCH_toyota         |
+<span class="k">                arch</span> |
+                L1.  |   .<span class="m">0666384</span>   .<span class="m">0101597</span>     <span class="m">6.56</span>   <span class="m">0.000</span>     .<span class="m">0467257</span>    .<span class="m">0865511</span>
+                     |
+              garch  |
+                L1.  |   .<span class="m">9210688</span>   .<span class="m">0119214</span>    <span class="m">77.26</span>   <span class="m">0.000</span>     .<span class="m">8977032</span>    .<span class="m">9444343</span>
+                     |
+              _cons  |   .<span class="m">0344153</span>   .<span class="m">0109208</span>     <span class="m">3.15</span>   <span class="m">0.002</span>      .<span class="m">013011</span>    .<span class="m">0558197</span>
+ <span class="o">--------------------+----------------------------------------------------------------</span>
+ nissan              |
+              _cons  |   .<span class="m">0079682</span>   .<span class="m">0349351</span>     <span class="m">0.23</span>   <span class="m">0.820</span>    <span class="o">-</span>.<span class="m">0605034</span>    .<span class="m">0764398</span>
+ <span class="o">--------------------+----------------------------------------------------------------</span>
+ ARCH_nissan         |
+<span class="k">                arch</span> |
+                L1.  |   .<span class="m">0851778</span>   .<span class="m">0132656</span>     <span class="m">6.42</span>   <span class="m">0.000</span>     .<span class="m">0591778</span>    .<span class="m">1111779</span>
+                     |
+              garch  |
+                L1.  |   .<span class="m">9016613</span>   .<span class="m">0150494</span>    <span class="m">59.91</span>   <span class="m">0.000</span>     .<span class="m">8721649</span>    .<span class="m">9311577</span>
+                     |
+              _cons  |   .<span class="m">0603765</span>   .<span class="m">0178318</span>     <span class="m">3.39</span>   <span class="m">0.001</span>     .<span class="m">0254269</span>    .<span class="m">0953262</span>
+ <span class="o">--------------------+----------------------------------------------------------------</span>
+<span class="k"> corr</span>(toyota,nissan) |   .<span class="m">6512249</span>   .<span class="m">0128548</span>    <span class="m">50.66</span>   <span class="m">0.000</span>       .<span class="m">62603</span>    .<span class="m">6764199</span>
+ <span class="o">-------------------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://www.stata.com/manuals/ts.pdf">Stata’s reference manual</a> for its
+estimation techniques.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../garch-dcc/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">GARCH(1,1) - DCC</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../garch/">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">GARCH(1,1)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 - 2024, Mingze Gao
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/mgao6767/frds" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">GARCH(1,1) - CCC</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#return-equation">Return equation</a></li>
+<li><a class="reference internal" href="#shock-equation">Shock equation</a></li>
+<li><a class="reference internal" href="#conditional-covariance-matrix">Conditional covariance matrix</a></li>
+<li><a class="reference internal" href="#log-likelihood-function">Log-likelihood function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#estimation-techniques">Estimation techniques</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC"><code class="docutils literal notranslate"><span class="pre">GARCHModel_CCC</span></code></a><ul>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.__init__"><code class="docutils literal notranslate"><span class="pre">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.fit"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.loglikelihood_model"><code class="docutils literal notranslate"><span class="pre">loglikelihood_model()</span></code></a></li>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.loglikelihood"><code class="docutils literal notranslate"><span class="pre">loglikelihood()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frds.algorithms.GARCHModel_CCC.Parameters"><code class="docutils literal notranslate"><span class="pre">Parameters</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=187304be"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=35a8b989"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
