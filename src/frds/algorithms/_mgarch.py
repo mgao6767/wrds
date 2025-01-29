@@ -304,16 +304,44 @@ class GARCHModel_DCC(GARCHModel_CCC):
         Returns:
             Tuple[float, float]: [a, b]
         """
-        a_grid = np.linspace(0.01, 0.5, 10)
-        b_grid = np.linspace(0.6, 0.95, 10)
-        max_ll = -np.inf
-        initial_values = [0.01, 0.8]
-        for a, b in itertools.product(a_grid, b_grid):
-            if a + b >= 1:
-                continue
-            ll = -self.loglikelihood_model([a, b])
-            if ll > max_ll:
-                initial_values = [a, b]
+        def hierarchical_grid_search(loglikelihood_model, initial_range, base_grid_size=100, depth=2):
+            current_range = initial_range
+            best_params = None
+
+            for i in range(depth):
+                # 创建当前深度的网格
+                a_grid = np.linspace(current_range[0, 0], current_range[0, 1], base_grid_size)
+                b_grid = np.linspace(current_range[1, 0], current_range[1, 1], base_grid_size)
+                a_values, b_values = np.meshgrid(a_grid, b_grid)
+                parameters = np.stack([a_values.ravel(), b_values.ravel()], axis=1)
+                
+                # 过滤无效组合
+                valid_indices = np.logical_and(parameters[:, 0] + parameters[:, 1] < 1,  # a + b < 1
+                                               parameters[:, 0] >= 0.001,  # a >= 0.001
+                                               parameters[:, 1] >= 0.001)  # b >= 0.001
+                valid_parameters = parameters[valid_indices]
+                
+                # 计算对数似然值
+                ll_values = -loglikelihood_model(valid_parameters)
+                max_ll_index = np.argmax(ll_values)
+                best_params = valid_parameters[max_ll_index]
+
+                # 更新搜索范围为最佳参数周围的较小区域
+                search_width = (current_range[:, 1] - current_range[:, 0]) / base_grid_size
+                current_range = np.array([
+                    [best_params[0] - search_width[0]*2, best_params[0] + search_width[0]*2],
+                    [best_params[1] - search_width[1]*2, best_params[1] + search_width[1]*2]
+                ])
+            return best_params
+
+        # 初始化参数范围
+        initial_range = np.array([[0.001, 0.5], [0.6, 1]])  # [a_range, b_range]
+        base_grid_size = 10  # 初始网格大小
+        depth = 1  # 搜索深度，即细化的次数
+
+        # 调用函数
+        best_parameters = hierarchical_grid_search(self.loglikelihood_model, initial_range, base_grid_size, depth)
+        initial_values = best_parameters
         return initial_values
 
     def loglikelihood_model(self, params: np.ndarray) -> float:
@@ -326,7 +354,12 @@ class GARCHModel_DCC(GARCHModel_CCC):
             float: negative log-likelihood
         """
         # fmt: off
-        a, b = params
+        if len(params.shape)>1:
+            a = params[:, 0]  # 第一列
+            b = params[:, 1]  # 第二列
+        else:
+            a = params[0]
+            b = params[1]
         resids1 = self.model1.resids
         resids2 = self.model2.resids
         sigma2_1 = self.model1.sigma2
@@ -339,7 +372,13 @@ class GARCHModel_DCC(GARCHModel_CCC):
         l1 = self.model1.parameters.loglikelihood + self.model2.parameters.loglikelihood
 
         # The loglikelihood of the correlation component (Step 2)
-        rho = self.conditional_correlations(a, b)
+        self.model1.fit()  # in case it was not estimated, no performance loss
+        self.model2.fit()  # in case it was not estimated
+        resids1 = self.model1.resids
+        resids2 = self.model2.resids
+        sigma2_1 = self.model1.sigma2
+        sigma2_2 = self.model2.sigma2
+        rho = conditional_correlations(resids1, resids2, sigma2_1, sigma2_2, a, b)
         # TODO: rare case rho is out of bounds
         rho = np.clip(rho, -0.99, 0.99)
 
@@ -348,7 +387,10 @@ class GARCHModel_DCC(GARCHModel_CCC):
             + np.log(1 - rho ** 2)
             + (z1 ** 2  + z2 ** 2  - 2 * rho * z1 * z2) / (1 - rho ** 2)
         )
-        l2 = np.sum(log_likelihood_terms)
+        if len(params.shape)>1:
+            l2 = np.sum(log_likelihood_terms, axis=1)
+        else:
+            l2 = np.sum(log_likelihood_terms)
 
         negative_loglikelihood = - (l1 + l2)
         return negative_loglikelihood
@@ -471,6 +513,54 @@ class GJRGARCHModel_DCC(GARCHModel_DCC):
             Parameters: :class:`frds.algorithms.GJRGARCHModel_DCC.Parameters`
         """
         return super().fit()
+
+from numba import jit
+@jit(nopython=True, cache=True)
+def conditional_correlations(resids1, resids2, sigma2_1, sigma2_2, a, b) -> np.ndarray:
+    # z1 and z2 are standardized residuals
+    z1 = resids1 / np.sqrt(sigma2_1)
+    z2 = resids2 / np.sqrt(sigma2_2)
+    Q_bar = np.corrcoef(z1, z2)
+    q_11_bar, q_12_bar, q_22_bar = Q_bar[0, 0], Q_bar[0, 1], Q_bar[1, 1]
+    T = z1.shape[0]
+    z1_squared = np.square(z1)
+    z2_squared = np.square(z2)
+    z1_z2 = np.multiply(z1, z2)
+    coeff = 1 - a - b
+
+    if isinstance(a, float):
+        q11 = np.empty_like(z1)
+        q12 = np.empty_like(z1)
+        q22 = np.empty_like(z1)
+        rho = np.zeros_like(z1)
+        q11[0] = q_11_bar
+        q22[0] = q_22_bar
+        q12[0] = q_12_bar
+        rho[0] = q12[0] / np.sqrt(q11[0] * q22[0])
+
+        for t in range(1, T):
+            q11[t] = coeff * q_11_bar + a * z1_squared[t - 1] + b * q11[t - 1]
+            q22[t] = coeff * q_22_bar + a * z2_squared[t - 1] + b * q22[t - 1]
+            q12[t] = coeff * q_12_bar + a * z1_z2[t - 1] + b * q12[t - 1]
+        rho[1:] = q12[1:] / np.sqrt(q11[1:] * q22[1:])
+
+    else:
+        q11 = np.empty((a.shape[0], z1.shape[0]))
+        q12 = np.empty((a.shape[0], z1.shape[0]))
+        q22 = np.empty((a.shape[0], z1.shape[0]))
+        rho = np.zeros((a.shape[0], z1.shape[0]))
+        q11[:, 0] = q_11_bar
+        q22[:, 0] = q_22_bar
+        q12[:, 0] = q_12_bar
+        rho[:, 0] = q12[:, 0] / np.sqrt(q11[:, 0] * q22[:, 0])
+
+        for t in range(1, T):
+            q11[:, t] = coeff * q_11_bar + a * z1_squared[t - 1] + b * q11[:, t - 1]
+            q22[:, t] = coeff * q_22_bar + a * z2_squared[t - 1] + b * q22[:, t - 1]
+            q12[:, t] = coeff * q_12_bar + a * z1_z2[t - 1] + b * q12[:, t - 1]
+        rho[:, 1:] = q12[:, 1:] / np.sqrt(q11[:, 1:] * q22[:, 1:])
+
+    return rho
 
 
 if __name__ == "__main__":

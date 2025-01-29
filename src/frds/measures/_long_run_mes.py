@@ -1,6 +1,7 @@
 from typing import Tuple
 import numpy as np
 from frds.algorithms import GJRGARCHModel, GJRGARCHModel_DCC
+from frds.algorithms._mgarch import conditional_correlations
 
 USE_CPP_EXTENSION = True
 try:
@@ -62,7 +63,13 @@ class LongRunMarginalExpectedShortfall:
         market_resids = self.market_model.resids
         # Conditional correlations
         a, b = self.dcc_model.parameters.a, self.dcc_model.parameters.b
-        rho = self.dcc_model.conditional_correlations(a, b)
+        self.dcc_model.model1.fit()  # in case it was not estimated, no performance loss
+        self.dcc_model.model2.fit()  # in case it was not estimated
+        resids1 = self.dcc_model.model1.resids
+        resids2 = self.dcc_model.model2.resids
+        sigma2_1 = self.dcc_model.model1.sigma2
+        sigma2_2 = self.dcc_model.model2.sigma2
+        rho = conditional_correlations(resids1, resids2, sigma2_1, sigma2_2, a, b)
         # Standarized residuals
         z_m = market_resids / np.sqrt(market_variances)
         z_i = firm_resids / np.sqrt(firm_variances)
@@ -73,65 +80,32 @@ class LongRunMarginalExpectedShortfall:
         # Sample with replacement S*h innovations
         # sample = sample.T[rng.choice(sample.shape[1], (S, h), replace=True)]
 
+        idx = rng.choice(len(xi_i), size=(S, h), replace=True)
+        # 使用高级索引和广播来生成 sample 数组
         sample = np.zeros((S, h, 2))
-        # Sample with replacement
-        for s in range(S):
-            idx = rng.choice(len(xi_i), size=h, replace=True)
-            sample[s, :, 0] = xi_i[idx]
-            sample[s, :, 1] = z_m[idx]
+        sample[:, :, 0] = xi_i[idx]
+        sample[:, :, 1] = z_m[idx]
 
         assert sample.shape == (S, h, 2)
 
         Q_bar = np.corrcoef(z_i, z_m)
 
-        firm_avg_return = 0.0
-        n_systemic_event = 0
-        for s in range(S):
-            # Each simulation
-            inv = sample[s, :, :]  # shape=(h,2)
-            assert inv.shape == (h, 2)
-            if USE_CPP_EXTENSION:
-                firm_return, systemic_event = ext.simulation(
-                    inv,
-                    C,
-                    self.firm_model.sigma2[-1],
-                    self.market_model.sigma2[-1],
-                    self.firm_model.resids[-1],
-                    self.market_model.resids[-1],
-                    self.dcc_model.parameters.a,
-                    self.dcc_model.parameters.b,
-                    rho[-1],
-                    Q_bar,
-                    self.firm_model.parameters.mu,
-                    self.firm_model.parameters.omega,
-                    self.firm_model.parameters.alpha,
-                    self.firm_model.parameters.gamma,
-                    self.firm_model.parameters.beta,
-                    self.market_model.parameters.mu,
-                    self.market_model.parameters.omega,
-                    self.market_model.parameters.alpha,
-                    self.market_model.parameters.gamma,
-                    self.market_model.parameters.beta,
-                )
-            else:
-                firm_return, systemic_event = self.simulation(
-                    innovation=inv,
-                    C=C,
-                    firm_var=self.firm_model.sigma2[-1],
-                    mkt_var=self.market_model.sigma2[-1],
-                    firm_resid=self.firm_model.resids[-1],
-                    mkt_resid=self.market_model.resids[-1],
-                    a=self.dcc_model.parameters.a,
-                    b=self.dcc_model.parameters.b,
-                    rho=rho[-1],
-                    Q_bar=Q_bar,
-                )
-            firm_avg_return += firm_return
-            n_systemic_event += systemic_event
+        systemic_event_firm_return = self.simulation(
+            innovation=sample,
+            C=C,
+            firm_var=self.firm_model.sigma2[-1],
+            mkt_var=self.market_model.sigma2[-1],
+            firm_resid=self.firm_model.resids[-1],
+            mkt_resid=self.market_model.resids[-1],
+            a=self.dcc_model.parameters.a,
+            b=self.dcc_model.parameters.b,
+            rho=rho[-1],
+            Q_bar=Q_bar,
+        )
+        systemic_event_firm_return = systemic_event_firm_return[systemic_event_firm_return != False]
 
-        if n_systemic_event == 0:
-            return 0.0
-        return -firm_avg_return / n_systemic_event
+        # 计算这些值的均值
+        return -np.mean(systemic_event_firm_return)
 
     def simulation(
         self,
@@ -167,48 +141,69 @@ class LongRunMarginalExpectedShortfall:
         q_i_bar = Q_bar[0, 0]
         q_m_bar = Q_bar[1, 1]
         q_im_bar = Q_bar[1, 0]
-        q_i, q_m, q_im = 1.0, 1.0, rho
+        S, h, d = innovation.shape
+        q_i = np.full(S, 1)
+        q_m = np.full(S, 1)
+        q_im = np.full(S, rho)
 
         pi = self.firm_model.parameters
         mu_i = pi.mu
-        omega_i, alpha_i, gamma_i, beta_i = pi.omega, pi.alpha, pi.gamma, pi.beta
+
+        # omega_i, alpha_i, gamma_i, beta_i = pi.omega, pi.alpha, pi.gamma, pi.beta
+        omega_i = np.full(S, pi.omega)
+        alpha_i = np.full(S, pi.alpha)
+        gamma_i = np.full(S, pi.gamma)
+        beta_i = np.full(S, pi.beta)
 
         pm = self.market_model.parameters
         mu_m = pm.mu
-        omega_m, alpha_m, gamma_m, beta_m = pm.omega, pm.alpha, pm.gamma, pm.beta
+        # omega_m, alpha_m, gamma_m, beta_m = pm.omega, pm.alpha, pm.gamma, pm.beta
+        omega_m = np.full(S, pm.omega)
+        alpha_m = np.full(S, pm.alpha)
+        gamma_m = np.full(S, pm.gamma)
+        beta_m = np.full(S, pm.beta)
 
-        firm_return = np.empty(shape=len(innovation))
-        mkt_return = np.empty(shape=len(innovation))
+        firm_return = np.empty((S, h))
+        mkt_return = np.empty((S, h))
 
         # lagged residuals
-        resid_i_tm1 = firm_resid
-        resid_m_tm1 = mkt_resid
+        # resid_i_tm1 = firm_resid
+        # resid_m_tm1 = mkt_resid
+        resid_i_tm1 = np.full(S, firm_resid)
+        resid_m_tm1 = np.full(S, mkt_resid)
         # lagged conditonal variance
-        firm_var_tm1 = firm_var
-        mkt_var_tm1 = mkt_var
+        # firm_var_tm1 = firm_var
+        # mkt_var_tm1 = mkt_var
+        firm_var_tm1 = np.full(S, firm_var)
+        mkt_var_tm1 = np.full(S, mkt_var)
         # lagged standarized residuals
-        firm_innov_tm1 = resid_i_tm1 / np.sqrt(firm_var_tm1)
-        mkt_innov_tm1 = resid_m_tm1 / np.sqrt(mkt_var_tm1)
+        # firm_innov_tm1 = resid_i_tm1 / np.sqrt(firm_var_tm1)
+        # mkt_innov_tm1 = resid_m_tm1 / np.sqrt(mkt_var_tm1)
+        firm_innov_tm1 = np.full(S, firm_resid / np.sqrt(firm_var))
+        mkt_innov_tm1 = np.full(S, mkt_resid / np.sqrt(mkt_var))
+        coff = (1 - a - b)
 
-        for h in range(len(innovation)):
+        for h in range(innovation.shape[-2]):
             # fmt: off
             # Each iteration is a one-step-ahead forecast
             # conditional variance this time
             firm_var_t = omega_i + alpha_i * (resid_i_tm1**2) + beta_i * firm_var_tm1
-            firm_var_t += gamma_i * (resid_i_tm1**2) if resid_i_tm1 < 0 else 0
+            # firm_var_t += gamma_i * (resid_i_tm1**2) if resid_i_tm1 < 0 else 0
+            firm_var_t += np.where(resid_i_tm1 < 0, gamma_i * (resid_i_tm1**2), 0)
 
             mkt_var_t = omega_m + alpha_m * (resid_m_tm1**2) + beta_m * mkt_var_tm1
-            mkt_var_t += gamma_m * (resid_m_tm1**2) if resid_m_tm1 < 0 else 0
+            # mkt_var_t += gamma_m * (resid_m_tm1**2) if resid_m_tm1 < 0 else 0
+            mkt_var_t += np.where(resid_m_tm1 < 0, gamma_m * (resid_m_tm1**2), 0)
 
             # conditional correlation this time
-            q_i = (1 - a - b) * q_i_bar + a * firm_innov_tm1**2 + b * q_i
-            q_m = (1 - a - b) * q_m_bar + a * mkt_innov_tm1**2 + b * q_m
-            q_im = (1 - a - b) * q_im_bar + a * firm_innov_tm1*mkt_innov_tm1 + b * q_im
+            q_i = coff * q_i_bar + a * firm_innov_tm1**2 + b * q_i
+            q_m = coff * q_m_bar + a * mkt_innov_tm1**2 + b * q_m
+            q_im = coff * q_im_bar + a * firm_innov_tm1*mkt_innov_tm1 + b * q_im
             rho_h = q_im / np.sqrt(q_i * q_m)
 
             # innovations this time
-            firm_innov = innovation[h, 0]
-            mkt_innov = innovation[h, 1]
+            firm_innov = innovation[:, h, 0]
+            mkt_innov = innovation[:, h, 1]
 
             # market excess return
             # or, residual this time, conditional volatility * innovation (z_m)
@@ -221,8 +216,8 @@ class LongRunMarginalExpectedShortfall:
                 rho_h * mkt_innov + np.sqrt(1 - rho_h**2) * firm_innov
             )
 
-            mkt_return[h] = mu_m + epsilon_m
-            firm_return[h] = mu_i + epsilon_i
+            mkt_return[:, h] = mu_m + epsilon_m
+            firm_return[:, h] = mu_i + epsilon_i
 
             firm_var_tm1 = firm_var_t
             mkt_var_tm1 = mkt_var_t
@@ -237,12 +232,6 @@ class LongRunMarginalExpectedShortfall:
 
         # systemic event if over the prediction horizon,
         # the market falls by more than C
-        systemic_event = np.exp(np.sum(mkt_return)) - 1 < C
+        systemic_event = np.exp(np.sum(mkt_return, axis=1)) - 1 < C
         # no need to simulate firm returns if there is no systemic event
-        if not systemic_event:
-            return 0.0, False
-
-        # firm return over the horizon
-        firmret = np.exp(np.sum(firm_return)) - 1
-
-        return firmret, True
+        return np.where(systemic_event, np.exp(np.sum(firm_return, axis=1)) - 1, False)
